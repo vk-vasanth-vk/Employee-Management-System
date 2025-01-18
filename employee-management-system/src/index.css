@@ -17,27 +17,17 @@ code {
 }
 
 button {
-  width: 200px;
+  width: 150px;
   height: 50px;
   border: 1px solid black;
   border-radius: 5px;
-  color: #61dafb;
-  background-color: #282c34;
+  color: white;
+  background-color: deepskyblue;
 }
 
 input {
-  width: 250px;
-  height: 40px;
   border: 1px solid black;
   border-radius: 10px;
   padding: 10px;
   margin-top: 20px;
-}
-
-th, td {
-  border: 1px solid #d1d5db;
-  padding-left: 1rem;
-  padding-right: 1rem;
-  padding-top: 0.5rem;
-  padding-bottom: 0.5rem;
 }
