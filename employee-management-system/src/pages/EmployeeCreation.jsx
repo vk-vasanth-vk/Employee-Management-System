@@ -2,9 +2,11 @@ import React, { useEffect, useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import InsertData from "../api/InsertData";
 import UpdateData from "../api/UpdateData";
+import DeleteData from "../api/DeleteData";
 import "../index.css";
 
 const EmployeeCreation = () => {
+    const [id, setId] = useState(0);
     const [name, setName] = useState("");
     const [dept, setDept] = useState("");
     const [email, setEmail] = useState("");
@@ -20,6 +22,7 @@ const EmployeeCreation = () => {
     // Populate form fields with data from location.state
     useEffect(() => {
         if (employeeData) {
+            setId(employeeData.id);
             setName(employeeData.name || "");
             setDept(employeeData.department || "");
             setEmail(employeeData.email || "");
@@ -59,7 +62,7 @@ const EmployeeCreation = () => {
         }
 
         try {
-            const response = await UpdateData(name, dept, email, salary, phone);
+            const response = await UpdateData(id, name, dept, email, salary, phone);
             setMessage(response.data.message || "Employee updated successfully");
             navigate("/employee-list");
         } catch (error) {
@@ -68,12 +71,21 @@ const EmployeeCreation = () => {
         }
     };
 
+    const deleteData = async () => {
+        try {
+            const response = await DeleteData(id);
+            navigate("/employee-list");
+        } catch (error) {
+            console.error("Error deleting employee:", error);
+            setMessage("Failed to delete record");
+        }
+    };
+
     return (
         <div className="w-full h-[680px] flex items-center justify-center">
             <div className="w-[550px] h-[600px] border border-black rounded-2xl flex justify-center items-center">
                 <form onSubmit={update ? updateDetails : handleSubmit}>
-                    {[
-                        { label: "Enter name", value: name, onChange: setName, type: "text" },
+                    {[{ label: "Enter name", value: name, onChange: setName, type: "text" },
                         { label: "Enter Department", value: dept, onChange: setDept, type: "text" },
                         { label: "Enter email", value: email, onChange: setEmail, type: "email" },
                         { label: "Enter salary", value: salary, onChange: setSalary, type: "number" },
@@ -89,9 +101,20 @@ const EmployeeCreation = () => {
                             />
                         </div>
                     ))}
-                    <button type="submit" className="mt-10 ml-[26px] p-2 bg-blue-500 text-white rounded">
-                        {update ? "Update Details" : "Add Employee"}
-                    </button>
+                    <div className="h-[80px] w-full flex items-center">
+                        <button type="submit" className="p-2 bg-blue-500 text-white rounded mr-4">
+                            {update ? "Update Details" : "Add Employee"}
+                        </button>
+                        {update && (
+                            <button
+                                type="button"
+                                onClick={deleteData}
+                                className="p-2 bg-red-500 text-white rounded"
+                            >
+                                Delete Record
+                            </button>
+                        )}
+                    </div>
                 </form>
                 {message && <p className="mt-4 text-red-500">{message}</p>}
             </div>

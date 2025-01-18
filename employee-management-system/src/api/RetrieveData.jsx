@@ -4,6 +4,7 @@ import axios from "axios";
 export const RetrieveData = async (setEmployees, setMessage) => {
     try {
         const response = await axios.get("http://localhost:8080/getEmployees");
+
         setEmployees(response.data); // Update the state with the fetched data
     } catch (error) {
         console.log("Error fetching employees:", error);

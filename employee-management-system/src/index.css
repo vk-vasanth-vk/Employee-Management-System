@@ -35,6 +35,9 @@ input {
 }
 
 th, td {
-  border: 1px solid #b0c400;
-  padding: 2px 4px 2px 4px;
+  border: 1px solid #d1d5db;
+  padding-left: 1rem;
+  padding-right: 1rem;
+  padding-top: 0.5rem;
+  padding-bottom: 0.5rem;
 }

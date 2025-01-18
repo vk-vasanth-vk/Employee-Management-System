@@ -1,19 +1,20 @@
-import React from "react";
 import axios from "axios";
 
-const UpdateData = async(name,department,email,salary,phone) => {
-    try{
+const UpdateData = async (id, name, department, email, salary, phoneNo) => {
+    try {
         const response = await axios.put(`http://localhost:8080/update-details`, {
+            id,
             name,
             department,
             email,
             salary,
-            phone
+            phoneNo
         });
 
-        return(response);
+        return response;
     } catch (error) {
-        throw ("Error updating details" + error);
+        console.error("Error updating details:", error.response || error.message);
+        throw new Error("Error updating details: " + error.message); // Throwing a more informative error
     }
 };
 

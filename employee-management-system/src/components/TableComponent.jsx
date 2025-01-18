@@ -13,10 +13,10 @@ const TableComponent = () => {
             await RetrieveData(setEmployees, setMessage);
         };
         fetchData();
-    }, []); // Empty dependency array ensures this runs only once
+    }, []);
 
     const updateDetails = (event) => {
-        const rowData = {...event.currentTarget.dataset};
+        const rowData = { ...event.currentTarget.dataset };
         navigate("/create-employee", { state: rowData }); // Pass rowData to the next page
     };
 
@@ -25,11 +25,12 @@ const TableComponent = () => {
             <table className="border-collapse border border-gray-400 w-full text-left">
                 <thead>
                 <tr className="bg-gray-200">
-                    <th scope="col" className="border border-gray-400 px-4 py-2">Name</th>
-                    <th scope="col" className="border border-gray-400 px-4 py-2">Department</th>
-                    <th scope="col" className="border border-gray-400 px-4 py-2">Email</th>
-                    <th scope="col" className="border border-gray-400 px-4 py-2">Salary</th>
-                    <th scope="col" className="border border-gray-400 px-4 py-2">Phone No</th>
+                    <th scope="col">Id</th>
+                    <th scope="col">Name</th>
+                    <th scope="col">Department</th>
+                    <th scope="col">Email</th>
+                    <th scope="col">Salary</th>
+                    <th scope="col">Phone No</th>
                 </tr>
                 </thead>
                 <tbody>
@@ -37,19 +38,22 @@ const TableComponent = () => {
                     employees.map((employee, index) => (
                         <tr
                             key={index}
-                            className="hover:bg-gray-100 cursor-pointer"
+                            className="hover:bg-gray-100 cursor-pointer hover:shadow-lg shadow-black"
+                            data-key={index}
+                            data-id={employee.id}
                             data-name={employee.name}
                             data-department={employee.department}
                             data-email={employee.email}
                             data-salary={employee.salary}
-                            data-phone={employee.phone}
+                            data-phone={employee.phoneNo}
                             onClick={updateDetails} // Pass event to the handler
                         >
-                            <td className="border border-gray-400 px-4 py-2">{employee.name}</td>
-                            <td className="border border-gray-400 px-4 py-2">{employee.department}</td>
-                            <td className="border border-gray-400 px-4 py-2">{employee.email}</td>
-                            <td className="border border-gray-400 px-4 py-2">{employee.salary}</td>
-                            <td className="border border-gray-400 px-4 py-2">{employee.phoneNo}</td>
+                            <td>{employee.id}</td>
+                            <td>{employee.name}</td>
+                            <td>{employee.department}</td>
+                            <td>{employee.email}</td>
+                            <td>{employee.salary}</td>
+                            <td>{employee.phoneNo}</td>
                         </tr>
                     ))
                 ) : (
