@@ -44,7 +44,7 @@ const TableComponent = ({ onSelect }) => {
                     <th scope="col">Id</th>
                     <th scope="col">Name</th>
                     <th scope="col">Department</th>
-                    <th scope="col">Role</th>
+                    <th scope="col">Designation</th>
                     <th scope="col">Email</th>
                     <th scope="col">Phone No</th>
                     <th scope="col">Salary</th>
@@ -60,6 +60,7 @@ const TableComponent = ({ onSelect }) => {
                             data-id={employee.id}
                             data-name={employee.name}
                             data-department={employee.department}
+                            data-role={employee.role}
                             data-email={employee.email}
                             data-salary={employee.salary}
                             data-phone={employee.phoneNo}
@@ -78,7 +79,7 @@ const TableComponent = ({ onSelect }) => {
                             <td>{employee.id}</td>
                             <td>{employee.name}</td>
                             <td>{employee.department}</td>
-                            <td></td>
+                            <td>{employee.role}</td>
                             <td>{employee.email}</td>
                             <td>{employee.phoneNo}</td>
                             <td>{employee.salary}</td>

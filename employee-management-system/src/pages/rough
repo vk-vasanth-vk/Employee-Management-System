@@ -1,0 +1,111 @@
+<div>
+            <div className="w-full h-[80px] flex items-center justify-center">
+            </div>
+            <div className="w- h-[550px] mt-8">
+                <h1 className="text-2xl font-bold ml-[200px]">Employee Details</h1>
+                <div className="w-full h-[550px] border border-black rounded-2xl">
+                    <form onSubmit={update ? updateDetails : handleSubmit}>
+                        <div>
+
+                            <div className="mb-3 flex items-center">
+                                <div className="ml-[200px]">
+                                    <label htmlFor="name">Name</label>
+                                </div>
+                                <div>
+                                    <input
+                                        type="text"
+                                        placeholder="Enter Name"
+                                        value={name}
+                                        onChange={(e) => setName(e.target.value)}
+                                        className="border border-gray-400 p-2 ml-4 w-[260px]"
+                                    />
+                                </div>
+                            </div>
+
+                            <div className="mb-3 flex items-center">
+                                <div className="ml-[200px]">
+                                    <label htmlFor="department">Department</label>
+                                </div>
+                                <div>
+                                    <input
+                                        type="text"
+                                        placeholder="Enter Department"
+                                        value={dept}
+                                        onChange={(e) => setDept(e.target.value)}
+                                        className="border border-gray-400 p-2 ml-4 w-[260px]"
+                                    />
+                                </div>
+                            </div>
+
+                            <div className="mb-3 flex items-center">
+                                <div className="ml-[200px]">
+                                    <label htmlFor="role">Role</label>
+                                </div>
+                                <div>
+                                    <input
+                                        type="text"
+                                        placeholder="Enter Role"
+                                        value={role}
+                                        onChange={(e) => setRole(e.target.value)}
+                                        className="border border-gray-400 p-2 ml-4 w-[260px]"
+                                    />
+                                </div>
+                            </div>
+
+                            <div className="mb-3 flex items-center">
+                                <div className="ml-[200px]">
+                                    <label htmlFor="email">Email</label>
+                                </div>
+                                <div>
+                                    <input
+                                        type="email"
+                                        placeholder="Enter Email"
+                                        value={email}
+                                        onChange={(e) => setEmail(e.target.value)}
+                                        className="border border-gray-400 p-2 ml-4 w-[260px]"
+                                    />
+                                </div>
+                            </div>
+
+                            <div className="mb-3 flex items-center">
+                                <div className="ml-[200px]">
+                                    <label htmlFor="phone">Phone no</label>
+                                </div>
+                                <div>
+                                    <input
+                                        type="number"
+                                        placeholder="Enter Phone no"
+                                        value={phone}
+                                        onChange={(e) => setPhone(e.target.value)}
+                                        className="border border-gray-400 p-2 ml-4 w-[260px]"
+                                    />
+                                </div>
+                            </div>
+
+                            <div className="mb-3 flex items-center">
+                                <div className="ml-[200px]">
+                                    <label htmlFor="salary">Salary</label>
+                                </div>
+                                <div>
+                                    <input
+                                        type="number"
+                                        placeholder="Enter Salary"
+                                        value={salary}
+                                        onChange={(e) => setSalary(e.target.value)}
+                                        className="border border-gray-400 p-2 ml-4 w-[260px]"
+                                    />
+                                </div>
+                            </div>
+                        </div>
+
+                        <div className="h-[80px] w-full flex items-center ml-[280px]">
+                            <button type="submit" className="p-2 bg-blue-500 text-white rounded mr-4">
+                                {update ? "Update Details" : "Add Employee"}
+                            </button>
+
+                        </div>
+                    </form>
+                    {message && <p className="mt-4 text-red-500">{message}</p>}
+                </div>
+            </div>
+        </div>

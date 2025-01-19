@@ -3,6 +3,8 @@ import { useLocation, useNavigate } from "react-router-dom";
 import InsertData from "../api/InsertData";
 import UpdateData from "../api/UpdateData";
 import "../index.css";
+import {AppBar, IconButton, Toolbar, Typography} from "@material-ui/core";
+import {Button} from "@mui/material";
 
 const EmployeeCreation = () => {
     const [id, setId] = useState(0);
@@ -25,6 +27,7 @@ const EmployeeCreation = () => {
             setId(employeeData.id);
             setName(employeeData.name || "");
             setDept(employeeData.department || "");
+            setRole(employeeData.role || "");
             setEmail(employeeData.email || "");
             setSalary(employeeData.salary || "");
             setPhone(employeeData.phone || "");
@@ -40,10 +43,11 @@ const EmployeeCreation = () => {
         }
 
         try {
-            const response = await InsertData(name, dept, email, salary, phone);
+            const response = await InsertData(name, dept, role, email, salary, phone);
             setMessage(response.data.message || "Employee added successfully");
             setName("");
             setEmail("");
+            setRole("");
             setPhone("");
             setDept("");
             setSalary("");
@@ -54,6 +58,18 @@ const EmployeeCreation = () => {
         }
     };
 
+    const cancelDetails = ()  =>{
+        setName("");
+        setEmail("");
+        setDept("");
+        setSalary("");
+        setRole("");
+        setSalary("");
+        setPhone("");
+
+        navigate("/employee-list");
+    }
+
     const updateDetails = async (e) => {
         e.preventDefault();
         if (!name || !email || !phone || !dept || !salary) {
@@ -62,7 +78,7 @@ const EmployeeCreation = () => {
         }
 
         try {
-            const response = await UpdateData(id, name, dept, email, salary, phone);
+            const response = await UpdateData(id, name, dept, role, email, salary, phone);
             setMessage(response.data.message || "Employee updated successfully");
             navigate("/employee-list");
         } catch (error) {
@@ -70,49 +86,88 @@ const EmployeeCreation = () => {
             setMessage("Failed to update employee");
         }
     };
-
-    return (
+    return(
         <div>
-            <div className="border border-black w-full h-[80px] flex items-center justify-center">
-                <h1 className="text-2xl font-bold">Employee Details</h1>
+            <div className="w-full h-[80px] border-b">
             </div>
-            <div className="w-full h-[550px] flex justify-center mt-12">
-                <div className="w-[710px] h-[55 0px] border border-black rounded-2xl">
-                    <form onSubmit={update ? updateDetails : handleSubmit}>
-                        {[{ label: "Name", value: name, onChange: setName, type: "text" },
-                            { label: "Department", value: dept, onChange: setDept, type: "text" },
-                            { label: "Role", value: role, onChange: setRole, type: "text" },
-                            { label: "Email", value: email, onChange: setEmail, type: "email" },
-                            { label: "Phone no", value: phone, onChange: setPhone, type: "number" },
-                            { label: "Salary", value: salary, onChange: setSalary, type: "number" },
-                        ].map((field, index) => (
-                            <div key={index} className="mb-3 flex items-center">
-                                <div className="ml-[200px]">
-                                    <label htmlFor={field}>{field.label}</label>
-                                </div>
-                                <div className="">
-                                    <input
-                                        type={field.type}
-                                        placeholder={`Enter ${field.label}`}
-                                        value={field.value}
-                                        onChange={(e) => field.onChange(e.target.value)}
-                                        className="border border-gray-400 p-2 ml-4 w-[260px]"
-                                    />
-                                </div>
-                            </div>
-                        ))}
-                        <div className="h-[80px] w-full flex items-center ml-[280px]">
-                            <button type="submit" className="p-2 bg-blue-500 text-white rounded mr-4">
-                                {update ? "Update Details" : "Add Employee"}
-                            </button>
+            <div className="mt-10">
+                    <h1 className="text-2xl font-bold ml-[350px]">Employee Details</h1>
+                <div>
+                    <form onSubmit={update ? updateDetails : handleSubmit} className="flex items-center">
+                        <div className="flex flex-col space-y-[37px] ml-[350px] mt-[45px] min-w-[200px] h-[350px]">
+                            <label htmlFor="name">Name</label>
+                            <label htmlFor="department">Department</label>
+                            <label htmlFor="role">Designation</label>
+                            <label htmlFor="email">Email ID</label>
+                            <label htmlFor="phone">Phone No</label>
+                            <label htmlFor="salary">Salary</label>
+                        </div>
+                        <div className="flex flex-col">
+                            <input
+                                type="text"
+                                placeholder="Enter Name"
+                                value={name}
+                                onChange={(e) => setName(e.target.value)}
+                                className="border border-gray-400 p-2 ml-4 w-[400px]"
+                            />
+                            <input
+                                type="text"
+                                placeholder="Enter Department"
+                                value={dept}
+                                onChange={(e) => setDept(e.target.value)}
+                                className="border border-gray-400 p-2 ml-4 w-[400px]"
+                            />
+                            <input
+                                type="text"
+                                placeholder="Enter Role"
+                                value={role}
+                                onChange={(e) => setRole(e.target.value)}
+                                className="border border-gray-400 p-2 ml-4 w-[400px]"
+                            />
+                            <input
+                                type="email"
+                                placeholder="Enter Email"
+                                value={email}
+                                onChange={(e) => setEmail(e.target.value)}
+                                className="border border-gray-400 p-2 ml-4 w-[400px]"
+                            />
+                            <input
+                                type="number"
+                                placeholder="Enter Phone no"
+                                value={phone}
+                                onChange={(e) => setPhone(e.target.value)}
+                                className="border border-gray-400 p-2 ml-4 w-[400px]"
+                            />
+                            <input
+                                type="number"
+                                placeholder="Enter Salary"
+                                value={salary}
+                                onChange={(e) => setSalary(e.target.value)}
+                                className="border border-gray-400 p-2 ml-4 w-[400px]"
+                            />
+                        </div>
+                        <div className="relative">
+                            <Button
+                                type="submit" className="absolute top-[250px] left-[-370px]" variant="contained"
+                                style={{
+                                    textTransform: "none"
+                                }}
+                            > {update ? "Save" : "Create"}
+                            </Button>
 
+                            <Button
+                                onClick={cancelDetails}
+                                type="button" className="absolute top-[250px] left-[-320px]" variant="outlined"
+                                style={{
+                                    textTransform: "none"
+                                }}
+                            >Cancel</Button>
                         </div>
                     </form>
-                    {message && <p className="mt-4 text-red-500">{message}</p>}
                 </div>
             </div>
         </div>
-    );
+    )
 };
 
 export default EmployeeCreation;
