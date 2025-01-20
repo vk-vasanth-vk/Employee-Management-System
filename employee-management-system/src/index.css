@@ -37,3 +37,13 @@ ul button {
   color: dodgerblue;
   border: 1px solid lightblue;
 }
+
+ul li {
+  display: flex;
+  align-items: center;
+  padding-left: 20px;
+}
+
+ul li:hover {
+  background-color: rgb(243 244 246);
+}

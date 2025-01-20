@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, {use, useState} from "react";
 import { useNavigate } from "react-router-dom";
 import TableComponent from "../components/TableComponent";
 import "../index.css";
@@ -14,8 +14,12 @@ const EmployeeListPage = () => {
     const [message, setMessage] = useState("");
     const [employees, setEmployees] = ([]);
     const [dropdownVisible, setDropdownVisible] = useState(false); // State to control dropdown visibility
+    const [deptDropdown, setDeptDropdown] = useState(false);
+    const [roleDropdown, setRoleDropdown] = useState(false);
     const [inputValue, setInputValue] = useState('');
     const [filteredData, setFilteredData] = useState([]);
+    const [filteredDept, setFilteredDept] = useState("");
+    const [filteredRole, setFilteredRole] = useState("");
 
     const handleNavigate = () => {
         navigate("/create-employee");
@@ -35,6 +39,14 @@ const EmployeeListPage = () => {
 
     const toggleDropdown = () => {
         setDropdownVisible((prevState) => !prevState);
+    };
+
+    const toggleDeptDropdown = () => {
+        setDeptDropdown((prevState) => !prevState);
+    };
+
+    const toggleRoleDropdown = () => {
+        setRoleDropdown((prevState) => !prevState);
     };
 
     async function getEmployeesByDept(event) {
@@ -64,6 +76,65 @@ const EmployeeListPage = () => {
 
     return (
         <div className="bg-gray-100 min-h-screen p-6">
+            {dropdownVisible &&
+                <div className="absolute top-0 right-0 z-10 w-[400px] h-[695px] bg-white border-l border-gray-400">
+                    <div className="shadow-md w-full h-[50px] flex items-center">
+                        <img src="/cancel-button.png" className="w-8 h-8 ml-4" onClick={toggleDropdown}/>
+                        <Button
+                            variant="contained"
+                            style={{
+                                backgroundColor: 1 > 0 ? "blueviolet" : "lightgray",
+                                color: "white",
+                                cursor: selectedIds.length > 0 ? "pointer" : "not-allowed",
+                                width: "80px",
+                                height: "40px",
+                                marginLeft: "250px",
+                                textTransform: "none"
+                            }}
+                            disabled={selectedIds.length <= 0}
+                            onClick={deleteData}
+                        >
+                            Apply
+                        </Button>
+                    </div>
+                    <div className={`w-full ${deptDropdown ? "h-[280px]" : "h-[70px]"}`}>
+                        <div
+                            className="h-[70px] w-full border flex items-center pl-5 hover:shadow-md hover:bg-gray-200 bg-gray-100 font-medium text-[17px]"
+                            onClick={toggleDeptDropdown}>
+                            Department
+                            <img src="/down-arrow.png" className="w-5 h-5 ml-2 mt-1"/>
+                        </div>
+                        <ul className={`h-[195px] w-full border ${deptDropdown ? "block" : "hidden"}`}>
+                            <li className="h-1/4 w-full border"
+                                onClick={(event) => getEmployeesByDept(event)}
+                            >Design</li>
+                            <li className="h-1/4 w-full border"
+                                onClick={(event) => getEmployeesByDept(event)}
+                            >Development</li>
+                            <li className="h-1/4 w-full border"
+                                onClick={(event) => getEmployeesByDept(event)}
+                            >Testing</li>
+                            <li className="h-1/4 w-full border"
+                                onClick={(event) => getEmployeesByDept(event)}
+                            >Human Resource</li>
+                        </ul>
+                    </div>
+                    <div className={`w-full ${roleDropdown ? "h-[280px]" : "h-[70px]"}`}>
+                        <div className="h-[70px] w-full border flex items-center pl-5 hover:shadow-md hover:bg-gray-200 bg-gray-100 font-medium text-[17px]" onClick={toggleRoleDropdown}>
+                            Designation
+                            <img src="/down-arrow.png" className="w-5 h-5 ml-2 mt-1"/>
+                        </div>
+                        <ul className={`h-[195px] w-full border ${roleDropdown ? "block" : "hidden"}`}>
+                            <li className="h-1/4 w-full border">Graphic Designer</li>
+                            <li className="h-1/4 w-full border">UI/UX Designer</li>
+                            <li className="h-1/4 w-full border">Web Developer</li>
+                            <li className="h-1/4 w-full border">DevOps Engineer</li>
+                            <li className="h-1/4 w-full border">Quality Analyst</li>
+                            <li className="h-1/4 w-full border">HR Recruiter</li>
+                        </ul>
+                    </div>
+                </div>
+            }
             {/* Header */}
             <div className="w-full flex items-center h-16 border-b border-gray-300 mb-4">
                 <h2 className="text-2xl font-bold text-center flex-1 ml-[300px]">Employee List</h2>
@@ -104,66 +175,8 @@ const EmployeeListPage = () => {
                         onClick={toggleDropdown}
                     >
                         Filter
-                        <svg
-                            className="w-[12px] h-[12px] ml-2"
-                            xmlns="http://www.w3.org/2000/svg"
-                            fill="none"
-                            viewBox="0 0 10 6"
-                        >
-                            <path
-                                stroke="currentColor"
-                                strokeLinecap="round"
-                                strokeLinejoin="round"
-                                strokeWidth="2"
-                                d="m1 1 4 4 4-4"
-                            />
-                        </svg>
+                        <img src="/filter.png" className="w-4 h-4 ml-2" />
                     </button>
-                    {dropdownVisible && (
-                        <div
-                            id="dropdown"
-                            className="absolute z-10 bg-white border rounded-md shadow-md top-full mt-1 left-0 w-44"
-                        >
-                            <ul className="py-2 text-sm " onClick={toggleDropdown}>
-                                <li>
-                                    <button
-                                        onClick={(event) => getEmployeesByDept(event)}
-                                        type="button"
-                                        className="block w-full px-4 py-2 text-left hover:bg-gray-100"
-                                    >
-                                        Development
-                                    </button>
-                                </li>
-                                <li>
-                                    <button
-                                        type="button"
-                                        onClick={(event) => getEmployeesByDept(event)}
-                                        className="block w-full px-4 py-2 text-left hover:bg-gray-100"
-                                    >
-                                        Design
-                                    </button>
-                                </li>
-                                <li>
-                                    <button
-                                        type="button"
-                                        onClick={(event) => getEmployeesByDept(event)}
-                                        className="block w-full px-4 py-2 text-left hover:bg-gray-100"
-                                    >
-                                        Testing
-                                    </button>
-                                </li>
-                                <li>
-                                    <button
-                                        type="button"
-                                        onClick={(event) => getEmployeesByDept(event)}
-                                        className="block w-full px-4 py-2 text-left hover:bg-gray-100"
-                                    >
-                                        Human Resource
-                                    </button>
-                                </li>
-                            </ul>
-                        </div>
-                    )}
 
                     {/* Search Input */}
                     <input
