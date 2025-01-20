@@ -5,6 +5,7 @@ import UpdateData from "../api/UpdateData";
 import "../index.css";
 import {AppBar, IconButton, Toolbar, Typography} from "@material-ui/core";
 import {Button} from "@mui/material";
+import {Toaster, toast} from 'sonner';
 
 const EmployeeCreation = () => {
     const [id, setId] = useState(0);
@@ -35,16 +36,54 @@ const EmployeeCreation = () => {
         }
     }, [employeeData]);
 
+    useEffect(() => {
+        if(message) {
+            const timer = setTimeout(() => {
+                setMessage("");
+            }, 5000);
+
+            return () => clearTimeout(timer);
+        }
+    }, [message]);
+
     const handleSubmit = async (e) => {
         e.preventDefault();
-        if (!name || !email || !phone || !dept || !salary) {
+        if (!name || !email || !role || !phone || !dept || !salary) {
             setMessage("All fields are required");
+            return;
+        }
+
+        if( /\d/.test(name) ) {
+            setMessage("Name shouldn't contain any numbers!");
+               return;
+        }
+
+        const emailRegex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
+
+        if(!emailRegex.test(email)) {
+            setMessage("Enter a valid email address!");
+            return;
+        }
+
+        const phoneRegex = /^\+?(\d{1,3})?[-.\s]?(\d{1,4})[-.\s]?(\d{1,4})[-.\s]?(\d{1,9})$/;
+
+        if(!phoneRegex.test(phone)) {
+            setMessage("Enter a valid phone number!");
+            return;
+        }
+
+        if(/^\d*$/.test(phone) && phone.length < 10) {
+            setMessage("Phone number should have 10 digits!");
+            return;
+        }
+
+        if(salary < 0) {
+            setMessage("Enter a valid salary");
             return;
         }
 
         try {
             const response = await InsertData(name, dept, role, email, salary, phone);
-            setMessage(response.data.message || "Employee added successfully");
             setName("");
             setEmail("");
             setRole("");
@@ -72,14 +111,42 @@ const EmployeeCreation = () => {
 
     const updateDetails = async (e) => {
         e.preventDefault();
-        if (!name || !email || !phone || !dept || !salary) {
+        if (!name || !email || !role || !phone || !dept || !salary) {
             setMessage("All fields are required");
+            return;
+        }
+
+        if( /\d/.test(name) ) {
+            setMessage("Name shouldn't contain any numbers!");
+            return;
+        }
+
+        const emailRegex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
+
+        if(!emailRegex.test(email)) {
+            setMessage("Enter a valid email address!");
+            return;
+        }
+
+        const phoneRegex = /^\+?(\d{1,3})?[-.\s]?(\d{1,4})[-.\s]?(\d{1,4})[-.\s]?(\d{1,9})$/;
+
+        if(!phoneRegex.test(phone)) {
+            setMessage("Enter a valid phone number!");
+            return;
+        }
+
+        if(phone.length < 10) {
+            setMessage("Phone number should have 10 digits!");
+            return;
+        }
+
+        if(salary < 0) {
+            setMessage("Enter a valid salary");
             return;
         }
 
         try {
             const response = await UpdateData(id, name, dept, role, email, salary, phone);
-            setMessage(response.data.message || "Employee updated successfully");
             navigate("/employee-list");
         } catch (error) {
             console.error("Error updating employee:", error);
@@ -90,7 +157,8 @@ const EmployeeCreation = () => {
         <div>
             <div className="w-full h-[80px] border-b">
             </div>
-            <div className="mt-10">
+            <div className="mt-4">
+                    <div className="w-full h-10 flex justify-center text-red-500 text-[20px]"> {message} </div>
                     <h1 className="text-2xl font-bold ml-[350px]">Employee Details</h1>
                 <div>
                     <form onSubmit={update ? updateDetails : handleSubmit} className="flex items-center">
@@ -132,7 +200,7 @@ const EmployeeCreation = () => {
                                 className="border border-gray-400 p-2 ml-4 w-[400px]"
                             />
                             <input
-                                type="number"
+                                type="text"
                                 placeholder="Enter Phone no"
                                 value={phone}
                                 onChange={(e) => setPhone(e.target.value)}

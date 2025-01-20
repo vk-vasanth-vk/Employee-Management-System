@@ -55,7 +55,7 @@ const TableComponent = ({ onSelect }) => {
                     employees.map((employee, index) => (
                         <tr
                             key={index}
-                            className="hover:bg-gray-100 cursor-pointer hover:shadow-lg shadow-black"
+                            className="hover:bg-gray-100 border-b border-gray-300 cursor-pointer hover:shadow-lg shadow-black"
                             data-key={index}
                             data-id={employee.id}
                             data-name={employee.name}
