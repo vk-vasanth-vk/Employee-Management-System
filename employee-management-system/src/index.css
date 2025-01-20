@@ -31,3 +31,9 @@ input {
   padding: 10px;
   margin-top: 20px;
 }
+
+ul button {
+  background-color: white;
+  color: dodgerblue;
+  border: 1px solid lightblue;
+}

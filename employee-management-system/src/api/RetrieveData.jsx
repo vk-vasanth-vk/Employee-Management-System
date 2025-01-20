@@ -1,9 +1,7 @@
-import axios from "axios";
-
 // Function to retrieve employees
-export const RetrieveData = async (setEmployees) => {
+export const RetrieveData = async (setEmployees, id) => {
     try {
-        const response = await fetch("http://localhost:8080/getEmployees");
+        const response = await fetch(`http://localhost:8080/getEmployees`);
 
         if (!response.ok) {
             throw new Error("Failed to fetch employees");

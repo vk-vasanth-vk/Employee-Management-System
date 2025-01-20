@@ -3,7 +3,7 @@ import { Checkbox } from "@mui/material";
 import { RetrieveData } from "../api/RetrieveData";
 import {useNavigate} from "react-router-dom";
 
-const TableComponent = ({ onSelect }) => {
+const TableComponent = ({ data, onSelect }) => {
     const [employees, setEmployees] = useState([]);
     const [message, setMessage] = useState("");
     const [selectedIds, setSelectedIds] = useState([]);
@@ -14,10 +14,14 @@ const TableComponent = ({ onSelect }) => {
         onSelect(selectedIds);
     }, [selectedIds, onSelect]);
 
+    useEffect(() => {
+        setEmployees(data);
+    }, [data]);
+
     // Fetch data when the component mounts
     useEffect(() => {
         const fetchData = async () => {
-            await RetrieveData(setEmployees, setMessage);
+            await RetrieveData(setEmployees);
         };
         fetchData();
     }, []);
