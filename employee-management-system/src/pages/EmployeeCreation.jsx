@@ -3,9 +3,7 @@ import { useLocation, useNavigate } from "react-router-dom";
 import InsertData from "../api/InsertData";
 import UpdateData from "../api/UpdateData";
 import "../index.css";
-import {AppBar, IconButton, Toolbar, Typography} from "@material-ui/core";
 import {Button} from "@mui/material";
-import {Toaster, toast} from 'sonner';
 
 const EmployeeCreation = () => {
     const [id, setId] = useState(0);
@@ -21,6 +19,15 @@ const EmployeeCreation = () => {
     const [update, setUpdate] = useState(false);
 
     const employeeData = location.state;
+
+    const roleList = [
+        {dept:"Design", role:"Graphic Designer"},
+        {dept:"Design", role:"UI/UX Designer"},
+        {dept:"Development", role:"Web Developer"},
+        {dept:"Development", role:"DevOps Engineer"},
+        {dept:"Testing", role:"Quality Analyst"},
+        {dept:"Human Resource", role:"HR Recruiter"},
+    ]
 
     // Populate form fields with data from location.state
     useEffect(() => {
@@ -178,20 +185,38 @@ const EmployeeCreation = () => {
                                 onChange={(e) => setName(e.target.value)}
                                 className="border border-gray-400 p-2 ml-4 w-[400px]"
                             />
-                            <input
-                                type="text"
-                                placeholder="Enter Department"
-                                value={dept}
-                                onChange={(e) => setDept(e.target.value)}
-                                className="border border-gray-400 p-2 ml-4 w-[400px]"
-                            />
-                            <input
-                                type="text"
-                                placeholder="Enter Role"
-                                value={role}
-                                onChange={(e) => setRole(e.target.value)}
-                                className="border border-gray-400 p-2 ml-4 w-[400px]"
-                            />
+
+                            <select className="border border-gray-400 p-2 ml-4 w-[400px]"
+                                onChange={(event) => setDept(event.target.value)}
+                            >
+                                <option defaultValue>Select Department</option>
+                                <option value="Design">Design</option>
+                                <option value="Development">Development</option>
+                                <option value="Testing">Testing</option>
+                                <option value="Human Resource">Human Resource</option>
+                            </select>
+
+                            <select className="border border-gray-400 p-2 ml-4 w-[400px]"
+                                 onChange={(event) => setRole(event.target.value)}
+                                    disabled={dept === ""}
+                                    title={dept === "" ? "Select the department first" : ""}
+                            >
+                                <option defaultValue>Select Designation</option>
+
+                                {dept !== "" && (
+                                    roleList
+                                        .filter((Role) => Role.dept === dept)
+                                            .map((Role, index) => (
+                                                <option value={Role.role}
+                                                    key={index}
+                                                >
+                                                    {Role.role}
+                                                </option>
+                                            ))
+                                )}
+
+                            </select>
+
                             <input
                                 type="email"
                                 placeholder="Enter Email"

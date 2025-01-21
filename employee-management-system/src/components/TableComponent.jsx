@@ -40,7 +40,7 @@ const TableComponent = ({ data, onSelect }) => {
     };
 
     return (
-        <div className="text-black p-5 w-full h-[400px]">
+        <div className="text-black w-full h-[400px]">
             <table className="border-collapse border border-gray-400 w-full text-left">
                 <thead>
                 <tr className="bg-gray-300">
@@ -59,7 +59,7 @@ const TableComponent = ({ data, onSelect }) => {
                     employees.map((employee, index) => (
                         <tr
                             key={index}
-                            className="hover:bg-gray-100 border-b border-gray-300 cursor-pointer hover:shadow-lg shadow-black"
+                            className="hover:bg-gray-200 border-b border-gray-300 cursor-pointer hover:shadow-lg shadow-black"
                             data-key={index}
                             data-id={employee.id}
                             data-name={employee.name}

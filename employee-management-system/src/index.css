@@ -25,7 +25,7 @@ button {
   background-color: deepskyblue;
 }
 
-input {
+input, select {
   border: 1px solid black;
   border-radius: 10px;
   padding: 10px;
@@ -45,5 +45,5 @@ ul li {
 }
 
 ul li:hover {
-  background-color: rgb(243 244 246);
+  background-color: #9CA3AF;
 }

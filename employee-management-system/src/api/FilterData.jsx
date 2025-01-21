@@ -1,30 +1,32 @@
 const FilterData = async (dept, role) => {
     try {
-        console.log(`dept: ${dept}, role:${role}`);
-        // Ensure filters are provided
-        if (!dept && !role) {
-            throw new Error("Filters are empty!");
+        // console.log(`dept: ${dept}, role:${role}`);
+        // // Ensure filters are provided
+        // if (!dept && !role) {
+        //     throw new Error("Filters are empty!");
+        // }
+
+        let url = ``;
+
+        if(dept && role) {
+            let encodedDept = encodeURIComponent(dept);
+            let encodedRole = encodeURIComponent(role);
+            url += `http://localhost:8080/filterEmployees/${encodedDept}/${encodedRole}`;
         }
 
-        let url = `http://localhost:8080/filterEmployees`;
+        else if(dept && !role) {
+            let encodedDept = encodeURIComponent(dept)
+            url += `http://localhost:8080/filterEmployeesByDept/${encodedDept}`;
+        }
 
-        if (dept && role) {
-            url += `/${dept}?role=${role}`;
-        }
-        // Case 2: Only dept has value
-        else if (dept) {
-            url += `/${dept}`;
-        }
-        // Case 3: Only role has value (no dept)
-        else if (role) {
-            url += `?role=${role}`;
-        } else {
-            return "Both filters are empty!";
+        else {
+            let encodedRole = encodeURIComponent(role);
+            url += `http://localhost:8080/filterEmployeesByRole/${encodedRole}`;
         }
 
         // Fetch data from the server
         const response = await fetch(url);
-        console.log(response);
+        // console.log(response);
 
         // Handle non-OK responses
         if (!response.ok) {

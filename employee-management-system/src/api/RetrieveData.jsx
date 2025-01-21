@@ -1,5 +1,5 @@
 // Function to retrieve employees
-export const RetrieveData = async (setEmployees, id) => {
+export const RetrieveData = async (setEmployees) => {
     try {
         const response = await fetch(`http://localhost:8080/getEmployees`);
 
