@@ -1,7 +1,4 @@
-import axios from "axios";
-
-const InsertData = async (name, dept, role, email, salary, phone) => {
-
+const InsertData = async (name, department, role, email, salary, phoneNo, setMessage) => {
     try {
         const response = await fetch("http://localhost:8080/insertRecord", {
             method: "POST",
@@ -10,17 +7,19 @@ const InsertData = async (name, dept, role, email, salary, phone) => {
             },
             body: JSON.stringify({
                 name,
-                dept,
+                department,
                 role,
                 email,
                 salary,
-                phone,
+                phoneNo,
             }),
         });
 
         if (!response.ok) {
             const errorDetails = await response.json(); // Fetch detailed error message from the response
             console.error("Server responded with an error:", errorDetails.message);
+            setMessage(errorDetails.message);
+            return false;
             throw new Error(errorDetails.message);
         }
 

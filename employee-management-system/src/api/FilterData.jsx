@@ -1,29 +1,21 @@
 const FilterData = async (dept, role) => {
-    try {
-        // console.log(`dept: ${dept}, role:${role}`);
-        // // Ensure filters are provided
-        // if (!dept && !role) {
-        //     throw new Error("Filters are empty!");
-        // }
-
-        let url = ``;
+        let url = 'http://localhost:8080/filterEmployees';
+        const params = new URLSearchParams();
 
         if(dept && role) {
-            let encodedDept = encodeURIComponent(dept);
-            let encodedRole = encodeURIComponent(role);
-            url += `http://localhost:8080/filterEmployees/${encodedDept}/${encodedRole}`;
+            params.append('dept',dept);
+            params.append('role',role);
+        } else if(dept) {
+            params.append('dept',dept);
+        }  else if(role) {
+            params.append('role',role);
         }
 
-        else if(dept && !role) {
-            let encodedDept = encodeURIComponent(dept)
-            url += `http://localhost:8080/filterEmployeesByDept/${encodedDept}`;
+        if(params.toString()) {
+            url += '?'+ params.toString();
         }
 
-        else {
-            let encodedRole = encodeURIComponent(role);
-            url += `http://localhost:8080/filterEmployeesByRole/${encodedRole}`;
-        }
-
+    try {
         // Fetch data from the server
         const response = await fetch(url);
         // console.log(response);

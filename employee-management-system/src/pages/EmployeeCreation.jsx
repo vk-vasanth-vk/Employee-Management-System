@@ -90,14 +90,19 @@ const EmployeeCreation = () => {
         }
 
         try {
-            const response = await InsertData(name, dept, role, email, salary, phone);
+            const response = await InsertData(name, dept, role, email, salary, phone, setMessage);
+            if(response) {
+                navigate("/employee-list");
+            } else {
+                setMessage(response)
+            }
+
             setName("");
             setEmail("");
             setRole("");
             setPhone("");
             setDept("");
             setSalary("");
-            navigate("/employee-list");
         } catch (error) {
             console.error("Error adding employee:", error);
             setMessage("Failed to add employee");
@@ -164,6 +169,7 @@ const EmployeeCreation = () => {
         <div>
             <div className="w-full h-[80px] border-b">
             </div>
+
             <div className="mt-4">
                     <div className="w-full h-10 flex justify-center text-red-500 text-[20px]"> {message} </div>
                     <h1 className="text-2xl font-bold ml-[350px]">Employee Details</h1>
@@ -227,6 +233,7 @@ const EmployeeCreation = () => {
                             <input
                                 type="text"
                                 placeholder="Enter Phone no"
+                                maxLength={10}
                                 value={phone}
                                 onChange={(e) => setPhone(e.target.value)}
                                 className="border border-gray-400 p-2 ml-4 w-[400px]"

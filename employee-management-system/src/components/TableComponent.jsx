@@ -9,6 +9,10 @@ const TableComponent = ({ data, onSelect }) => {
     const [selectedIds, setSelectedIds] = useState([]);
     const navigate = useNavigate();
 
+    useEffect(() => {
+        console.log(data)
+    }, [data]);
+
     // Notify parent component of changes in selection
     useEffect(() => {
         onSelect(selectedIds);

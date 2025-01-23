@@ -1,6 +1,6 @@
 const SearchData = async(name) => {
-    if(name === null)
-        return
+    if(name === null || name === "")
+        return null;
 
     try{
         const response = await fetch(`http://localhost:8080/searchByName/${name}`);
