@@ -1,13 +1,10 @@
 package com.project.employee_management_backend.model;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
+import jakarta.persistence.*;
 import lombok.*;
 
 @Entity
-@Data // Combines @Getter, @Setter, @ToString, @EqualsAndHashCode, and @RequiredArgsConstructor
+@Data // Handles @Getter and @Setter
 @NoArgsConstructor // Generates a no-arguments constructor
 @AllArgsConstructor // Generates a constructor with all fields
 public class Employee {
@@ -15,14 +12,15 @@ public class Employee {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id; // Auto-generated ID column
-    private String name; // Single column for storing names
+    private String name;
     private String department;
     private String role;
     private String email;
     private Float salary;
     private Long phoneNo;
+    private Integer year_of_experience;
 
-    // Additional methods can still be added manually, like validations
+    // Validates the input data's
     public static void validateEmployee(Employee employee) {
         if (employee.getName() == null || employee.getName().isEmpty()) {
             throw new IllegalArgumentException("Name cannot be empty");
@@ -33,10 +31,10 @@ public class Employee {
         if (employee.getPhoneNo() == null) {
             throw new IllegalArgumentException("Phone number cannot be empty");
         }
-        if (employee.getDepartment() == null) {
+        if (employee.getDepartment() == null || employee.getDepartment().isEmpty()) {
             throw new IllegalArgumentException("Department cannot be empty");
         }
-        if (employee.getRole() == null) {
+        if (employee.getRole() == null || employee.getRole().isEmpty()) {
             throw new IllegalArgumentException("Role cannot be empty");
         }
         if (employee.getSalary() == null) {
@@ -46,13 +44,13 @@ public class Employee {
             throw new IllegalArgumentException("Name cannot contain numbers");
         }
         if (!employee.getEmail().matches("^[A-Za-z0-9+_.-]+@[A-Za-z0-9.-]+\\.[A-Za-z]{2,6}$")) {
-            throw new IllegalArgumentException("Enter valid email address");
+            throw new IllegalArgumentException("Email address is not valid");
         }
         if (String.valueOf(employee.getPhoneNo()).length() != 10 || employee.getPhoneNo() < 0) {
-            throw new IllegalArgumentException("Enter valid phone number");
+            throw new IllegalArgumentException("Phone number is not valid");
         }
         if (employee.getSalary() < 0) {
-            throw new IllegalArgumentException("Enter valid salary");
+            throw new IllegalArgumentException("Salary is not valid");
         }
     }
 
