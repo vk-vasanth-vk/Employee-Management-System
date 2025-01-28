@@ -4,25 +4,8 @@ import React, { useEffect, useState } from "react";
 import { RetrieveData } from "../utils/api";
 import { Checkbox } from "@mui/material";
 import { useRouter } from "next/navigation";
-
-interface Employee {
-    id: number;
-    name: string;
-    department: string;
-    role: string;
-    email: string;
-    phoneNo: string;
-    salary: number;
-    year_of_experience: number;
-}
-
-interface TableProps {
-    data: Employee[];
-    pageIndex: number;
-    fetch: boolean;
-    onSelect: (selectedIds: number[]) => void;
-    sendEmployees: (employees: Employee[]) => void;
-}
+import Employee from "@/app/types/Employee";
+import TableProps from "@/app/types/TableProps";
 
 export default function Table({data, pageIndex, reload, onSelect, sendEmployees}: TableProps) {
 
@@ -30,7 +13,7 @@ export default function Table({data, pageIndex, reload, onSelect, sendEmployees}
     const [message, setMessage] = useState("");
     const [selectedIds, setSelectedIds] = useState<number[]>([]);
     const [currentPage, setCurrentPage] = useState(pageIndex);
-    const [employeesPerPage, setEmployeesPerPage] = useState(10);
+    const employeesPerPage = 10;
 
     const router = useRouter();
     const lastIndex = currentPage * employeesPerPage;
@@ -70,17 +53,6 @@ export default function Table({data, pageIndex, reload, onSelect, sendEmployees}
         }
     }, [reload]);
 
-    interface RowData {
-        id: string;
-        name: string;
-        department: string;
-        role: string;
-        email: string;
-        phone: string;
-        salary: string;
-        experience: string;
-    }
-
     const updateDetails = (employee: Employee) => {
         const query = new URLSearchParams({
             id: employee.id.toString(),
@@ -88,42 +60,23 @@ export default function Table({data, pageIndex, reload, onSelect, sendEmployees}
             department: employee.department,
             role: employee.role,
             email: employee.email,
-            phone: employee.phoneNo,
+            phone: employee.phone,
             salary: employee.salary.toString(),
-            experience: employee.year_of_experience.toString(),
+            experience: employee.experience.toString(),
         }).toString();
         router.push(`/employee/employeeCreation?${query}`);
     };
 
-    interface Employee {
-        id: number;
-        name: string;
-        department: string;
-        role: string;
-        email: string;
-        phoneNo: string;
-        salary: number;
-        year_of_experience: number;
-    }
-
-    interface TableProps {
-        data: Employee[];
-        fetch: () => void;
-        onSelect: (selectedIds: number[]) => void;
-    }
-
     const handleCheckboxChange = (e: React.ChangeEvent<HTMLInputElement>, employee: Employee) => {
         if (e.target.checked) {
-            setSelectedIds((prev: number[]) => [...prev, employee.id]);
+            setSelectedIds((prev: number[]) => [...prev, Number(employee.id)]);
         } else {
-            setSelectedIds((prev) => prev.filter((id) => id !== employee.id));
+            setSelectedIds((prev) => prev.filter((id) => id !== Number(employee.id)));
         }
     };
 
-
-
     return (
-        <div className="text-black w-full h-[400px]">
+        <div className="text-black w-full h-[530px]">
             <table className="border-collapse border border-gray-400 w-full text-left">
                 <thead>
                 <tr className="bg-gray-300">

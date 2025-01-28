@@ -1,18 +1,4 @@
-import { headers } from "next/headers";
-import axios from "axios";
-
-interface Employee {
-    id: number;
-    name: string;
-    department: string;
-    role: string;
-    email: string;
-    salary: string;
-    phoneNo: string;
-    year_of_experience: string;
-}
-
-let  BASE_URL = "http://localhost:8080";
+const  BASE_URL = "http://localhost:8080";
 let fetchURL = "";
 
 // Fetch all employees (GET)
@@ -25,7 +11,24 @@ export async function RetrieveData() {
 // Create a new employee (POST)
 export async function createEmployee(name: string, dept: string, role: string, email: string, salary: string, phone: string, experience: string) {
     try {
-        
+        const response = await fetch(`http://localhost:8080/insertRecord`, {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+            },
+            body: JSON.stringify({
+                name,
+                department: dept,
+                role,
+                email,
+                phoneNo: phone,
+                salary,
+                year_of_experience: experience,
+            }),
+            }        
+        );
+
+        return response;
     } catch(error) {
         console.log(error);
     }
