@@ -1,11 +1,9 @@
-package com.project.employee_management_backend.repository;
+package com.project.employee_management_backend.jpa;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
-import com.project.employee_management_backend.model.Employee;
 
 import java.util.List;
-import java.util.Optional;
 
 @Repository
 public interface EmployeeRepository extends JpaRepository<Employee, Integer> {

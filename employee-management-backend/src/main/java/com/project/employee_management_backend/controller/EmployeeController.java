@@ -1,19 +1,21 @@
 package com.project.employee_management_backend.controller;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.project.employee_management_backend.model.Employee;
+import com.project.employee_management_backend.jpa.Employee;
+import com.project.employee_management_backend.jpa.FileEntity;
+import com.project.employee_management_backend.mongo.Doc;
+import com.project.employee_management_backend.service.DocService;
 import com.project.employee_management_backend.service.EmployeeService;
 import com.project.employee_management_backend.service.FileService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.io.ByteArrayResource;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 import java.lang.Integer;
 
@@ -26,6 +28,9 @@ public class EmployeeController {
 
     @Autowired
     private FileService fileService;
+
+    @Autowired
+    private DocService docService;
 
     /**
      * Inserts a new employee record.
@@ -83,10 +88,10 @@ public class EmployeeController {
             @RequestParam(required = false) String role,
             @RequestParam(required = false) String name) {
         try {
-            if (dept == null && role == null) {
+            if (dept == null && role == null && name == null) {
                 // Return error if no filter parameter is provided
                 Map<String, String> response = new HashMap<>();
-                response.put("message", "Provide at least one filter parameter: dept or role.");
+                response.put("message", "Provide at least one filter parameter");
                 return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(response);
             }
 
@@ -131,10 +136,12 @@ public class EmployeeController {
     public ResponseEntity<?> updateDetails(@RequestBody Employee updateEmployee) {
         try {
             employeeService.updateDetails(updateEmployee);
-            return ResponseEntity.ok("Employee details updated successfully.");
+            return ResponseEntity.ok(Collections.singletonMap("message", "Employee details updated successfully."));
         } catch (Exception e) {
-            // Handle case where employee is not found
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Error: " + e.getMessage());
+            // Return error message in JSON format
+            Map<String, String> errorResponse = new HashMap<>();
+            errorResponse.put("error", e.getMessage());
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(errorResponse);
         }
     }
 
@@ -159,7 +166,7 @@ public class EmployeeController {
         }
     }
 
-    @PostMapping("/upload")
+    @PostMapping("/uploadFile")
     public ResponseEntity<String> uploadFile(@RequestParam("file") MultipartFile file) {
         try {
             fileService.saveFile(file);
@@ -168,4 +175,60 @@ public class EmployeeController {
             return ResponseEntity.status(500).body("File upload failed: " + e.getMessage());
         }
     }
+
+    @GetMapping("/getFile/{id}")
+    public ResponseEntity<?> getFile(@PathVariable Integer id) {
+        FileEntity fileEntity = fileService.getFile(id);
+        return ResponseEntity.ok()
+                .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"" + fileEntity.getFileName() + "\"")
+                .contentType(MediaType.parseMediaType(fileEntity.getFileType()))
+                .body(fileEntity.getFileData());
+    }
+
+    @PostMapping("/addDoc")
+    public Doc addDoc(@RequestBody Doc doc) {
+        return docService.addDoc(doc);
+    }
+
+    @GetMapping("/getDocs/{id}")
+    public ResponseEntity<?> getDocs(@PathVariable String id) {
+        // Fetch the document by ID
+        Doc doc = docService.getDoc(id);
+
+        if (doc == null) {
+            return ResponseEntity.notFound().build();  // Return 404 if not found
+        }
+
+        // Check if the data is null or empty before attempting to convert
+        if (doc.getData() == null) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body("Document data is empty or corrupted");
+        }
+
+        // Return the document data along with other properties
+//        return ResponseEntity.ok(new DocumentResponse(
+//                doc.getId(),
+//                doc.getFileName(),
+//                doc.getDataAsBase64()  // Get Base64 representation of the Binary data
+//        ));
+        return ResponseEntity.ok(doc);
+    }
+
+    // DTO to return Base64 string in API response
+//    class DocumentResponse {
+//        private String id;
+//        private String fileName;
+//        private String base64Data;
+//
+//        public DocumentResponse(String id, String fileName, String base64Data) {
+//            this.id = id;
+//            this.fileName = fileName;
+//            this.base64Data = base64Data;
+//        }
+//
+//        // Getters
+//        public String getId() { return id; }
+//        public String getFileName() { return fileName; }
+//        public String getBase64Data() { return base64Data; }
+//    }
 }

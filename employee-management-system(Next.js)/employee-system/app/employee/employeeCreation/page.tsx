@@ -3,19 +3,24 @@
 import Link from "next/link";
 import "../styles/style.css";
 import { Button } from '@mui/material';
-import React, { useEffect, useState } from "react";
-import { useRouter, useSearchParams } from "next/navigation";
-import { createEmployee, UpdateData, UploadFile } from "../../utils/api";
 import Employee from "@/app/types/Employee";
-
+import React, { useEffect, useState } from "react";
+import { useEmployee } from "@/app/context/EmployeeContext";
+import { useRouter } from "next/navigation";
+import { createEmployee, UpdateData, UploadFile } from "../../utils/api";
 
 const EmployeeCreation = () => {
+  // State to check if the DOM has loaded
   const [domLoaded, setDomLoaded] = useState(false);
   
+  // Set domLoaded to true once the component is mounted
   useEffect(() => {
     setDomLoaded(true);
   }, []);
 
+  const {selectedEmployee, setSelectedEmployee} = useEmployee();
+
+  // State to hold the employee form data
   const [employee, setEmployee] = useState<Employee>({
     id: "",
     name: "",
@@ -27,12 +32,19 @@ const EmployeeCreation = () => {
     experience: 0,
   });
 
+  // State for error/success messages
   const [message, setMessage] = useState("");
+  
+  // State to track whether it's an update operation or a create operation
   const [update, setUpdate] = useState(false);
+  
+  // State to handle file upload
   const [file, setFile] = useState<File | null>(null);
+  
+  // Router and search params for URL management
   const router = useRouter();
-  const searchParams = useSearchParams();
 
+  // List of possible roles for each department
   const roleList = [
     { dept: "Design", role: "Graphic Designer" },
     { dept: "Design", role: "UI/UX Designer" },
@@ -42,25 +54,24 @@ const EmployeeCreation = () => {
     { dept: "Human Resource", role: "HR Recruiter" },
   ];
 
-  // Populate form fields with data from TableComponentPage
+  // Populate form fields with data from URL parameters for updating an employee
   useEffect(() => {
-    if (searchParams) {
-      const data = Object.fromEntries(searchParams.entries());
-      if (data.id) {
+    if (selectedEmployee) {
+      if (selectedEmployee.id) {
         setEmployee({
-          id: data.id,
-          name: data.name || "",
-          department: data.department || "",
-          role: data.role || "",
-          email: data.email || "",
-          salary: Number(data.salary) || 0,
-          phone: data.phone || "",
-          experience: Number(data.experience) || 0,
+          id: selectedEmployee.id,
+          name: selectedEmployee.name || "",
+          department: selectedEmployee.department || "",
+          role: selectedEmployee.role || "",
+          email: selectedEmployee.email || "",
+          salary: Number(selectedEmployee.salary) || 0,
+          phone: selectedEmployee.phoneNo || "",
+          experience: Number(selectedEmployee.year_of_experience) || 0,
         });
         setUpdate(true);
       }
     }
-  }, [searchParams]);
+  }, [selectedEmployee]);
 
   // Auto-clear messages after 5 seconds
   useEffect(() => {
@@ -70,14 +81,14 @@ const EmployeeCreation = () => {
     }
   }, [message]);
 
-    // This useEffect will be triggered every time the 'file' state changes
-    useEffect(() => {
-      if (file) {
-        uploadFile();
-      }
-    }, [file]); // The effect runs when 'file' changes
+  // Trigger file upload when the file state changes
+  useEffect(() => {
+    if (file) {
+      uploadFile();
+    }
+  }, [file]);
 
-    // Handle form submission
+  // Handle form submission (either create or update employee)
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!validateFields()) {
@@ -97,9 +108,12 @@ const EmployeeCreation = () => {
           employee.phone,
           employee.experience.toString()
         );
-        setMessage("Employee details updated successfully");
+
         if (response) {
+          setMessage(response.message);
+          setTimeout(() => {
           router.push("/employee/employeeList");
+          }, 1500); 
         }
       } else {
         const response = await createEmployee(
@@ -111,9 +125,12 @@ const EmployeeCreation = () => {
           employee.phone,
           employee.experience.toString()
         );
-        setMessage("Employee details created successfully");
+        
         if (response) {
+          setMessage(response.message);
+          setTimeout(() => {
           router.push("/employee/employeeList");
+          }, 1500); 
         }
       }
     } catch (error) {
@@ -121,6 +138,7 @@ const EmployeeCreation = () => {
     }
   };
 
+  // Handle file upload to the server
   const uploadFile = async () => {
     if (file) {
       const formData = new FormData();
@@ -135,7 +153,9 @@ const EmployeeCreation = () => {
     }
   };
 
+  // Reset the form to empty state
   const resetForm = () => {
+    setSelectedEmployee(null);
     setEmployee({
       id: "",
       name: "",
@@ -148,14 +168,15 @@ const EmployeeCreation = () => {
     });
   };
 
+  // Handle changes in input fields
   const handleChange = (
     e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>
   ) => {
     const { name, value } = e.target;
     setEmployee((prev) => ({ ...prev, [name]: value }));
   };
-  
 
+  // Validate the form fields before submitting
   const validateFields = () => {
     const { name, email, role, phone, department, salary, experience } = employee;
 
@@ -305,8 +326,7 @@ const EmployeeCreation = () => {
           <input
             type="file"
             placeholder="Upload file"
-            accept=".txt"
-            title="Upload .txt file"
+            accept=".pdf,.jpg,.jpeg,.png,.txt"
             className="border border-gray-400 p-2 ml-4 w-[400px]"
             onChange={(e) => {
               if (e.target.files) {

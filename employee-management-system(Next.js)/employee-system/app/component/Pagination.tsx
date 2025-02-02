@@ -6,15 +6,18 @@ const Pagination = ({ totalEmployees, setCurrentPage }: { totalEmployees: number
     }
 
     return(
-        <div className="mt-2 mb-2 flex justify-center">
-            {pages.map((page, index) => (
-                <button key={index} className="w-10 h-11 border-none bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded"
-                    onClick={() => setCurrentPage(page)}
-                >{page}</button>
-            ))
+        <>
+            <div className="mt-2 mb-2 flex justify-center">
+                {pages.map((page, index) => (
+                    <button key={index} className="w-10 h-11 border-none bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded"
+                        onClick={() => setCurrentPage(page)}
+                    >{page}</button>
+                ))
 
-            }
-        </div>
+                }
+            </div>
+            
+        </>
     )
 }
 

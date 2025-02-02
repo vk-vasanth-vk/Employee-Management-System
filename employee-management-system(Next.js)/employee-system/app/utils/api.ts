@@ -1,3 +1,4 @@
+import Employee from "@/app/types/Employee";
 const  BASE_URL = "http://localhost:8080";
 let fetchURL = "";
 
@@ -11,7 +12,7 @@ export async function RetrieveData() {
 // Create a new employee (POST)
 export async function createEmployee(name: string, dept: string, role: string, email: string, salary: string, phone: string, experience: string) {
     try {
-        const response = await fetch(`http://localhost:8080/insertRecord`, {
+        const response = await fetch(`${BASE_URL}/insertRecord`, {
             method: "POST",
             headers: {
                 "Content-Type": "application/json",
@@ -28,7 +29,8 @@ export async function createEmployee(name: string, dept: string, role: string, e
             }        
         );
 
-        return response;
+        const data = await response.json();
+        return data;
     } catch(error) {
         console.log(error);
     }
@@ -88,13 +90,17 @@ export async function UpdateData(id: number, name: string, department: string, r
         }),
     });
 
+    const data = await response.json();
+
     if(!response.ok) throw new Error("Failed to update employee");
-    return response.json();
+    return data;
 }
 
 // Upload file
 export async function UploadFile(file: FormData) {
-    const response = await fetch(`${BASE_URL}/upload`, {
+    console.log(file);
+
+    const response = await fetch(`${BASE_URL}/uploadFile`, {
         method: "POST",
         body: file,
     });

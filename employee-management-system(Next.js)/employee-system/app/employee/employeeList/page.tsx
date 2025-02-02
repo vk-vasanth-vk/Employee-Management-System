@@ -24,7 +24,7 @@ export default function EmployeeList() {
 
   const [employees, setEmployees] = useState<Employee[]>([]);
   const [pageIndex, setPageIndex] = useState(1);
-
+ 
   useEffect(() => {
     if (message) {
       const timer = setTimeout(() => {
@@ -37,8 +37,18 @@ export default function EmployeeList() {
 
   const triggerFetchFunction = () => {
     setTriggerFetch(true);
-    setTimeout(() => setTriggerFetch(false), 0);
   };
+
+  useEffect(() => {
+    if (triggerFetch) {
+      const timer = setTimeout(() => {
+      setTriggerFetch(false);
+      }, 3000);
+
+      return () => clearTimeout(timer);
+    }
+  }, [triggerFetch]);
+  
 
   const deleteData = async () => {
     if (selectedIds.length === 0) return;
@@ -64,11 +74,15 @@ export default function EmployeeList() {
   };
 
   const filterEmployee = async () => {
+    if(filteredDept === '' && filteredRole === '' && inputValue === '') 
+      return;
+
     try {
       const response = await FilterData(inputValue, filteredDept, filteredRole);
 
       if (response) {
         setFilteredData(response);
+        setEmployees(response);
       }
     } catch (e) {
       console.error(e);
@@ -249,19 +263,20 @@ export default function EmployeeList() {
           </div>
         </div>
 
-        <div className="flex items-center text-red-500 mb-6"
-                    onClick={() => {
-                        triggerFetchFunction()
-                    }}
-            >
-                <div className="ml-[1370px]">
-                    <button className="border-none h-6 w-[100px] bg-gray-100 flex items-center">
-                        <h2 className="text-red-500 mr-2"> Clear Filter </h2>
-                        {/* <img src="/close-red.png" className="ml-2 w-3 h-3"/> */}
-                        <Image src="/close-red.png" alt="close" width={12} height={12} />
-                    </button>
-                </div>
+        <div className="flex items-center text-red-500 mb-2 relative flex justify-center w-100 h-10"
+            onClick={() => {
+                triggerFetchFunction()
+            }}
+        >
+            <p>{message}</p>
+            <div className="absolute right-0">
+                <button className="border-none h-6 w-[100px] bg-gray-100 flex items-center">
+                    <h2 className="text-red-500 mr-2"> Clear Filter </h2>
+                    {/* <img src="/close-red.png" className="ml-2 w-3 h-3"/> */}
+                    <Image src="/close-red.png" alt="close" width={12} height={12} />
+                </button>
             </div>
+        </div>
 
         {/* Employee Table */}
         <Table 

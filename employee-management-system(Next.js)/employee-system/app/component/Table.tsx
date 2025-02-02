@@ -6,13 +6,15 @@ import { Checkbox } from "@mui/material";
 import { useRouter } from "next/navigation";
 import Employee from "@/app/types/Employee";
 import TableProps from "@/app/types/TableProps";
+import { useEmployee } from "@/app/context/EmployeeContext";
 
 export default function Table({data, pageIndex, reload, onSelect, sendEmployees}: TableProps) {
 
     const [employees, setEmployees] = useState<Employee[]>([]);
-    const [message, setMessage] = useState("");
     const [selectedIds, setSelectedIds] = useState<number[]>([]);
     const [currentPage, setCurrentPage] = useState(pageIndex);
+    const { setSelectedEmployee } = useEmployee();
+    const [message, setMessage] = useState("");
     const employeesPerPage = 10;
 
     const router = useRouter();
@@ -53,20 +55,7 @@ export default function Table({data, pageIndex, reload, onSelect, sendEmployees}
         }
     }, [reload]);
 
-    const updateDetails = (employee: Employee) => {
-        const query = new URLSearchParams({
-            id: employee.id.toString(),
-            name: employee.name,
-            department: employee.department,
-            role: employee.role,
-            email: employee.email,
-            phone: employee.phone,
-            salary: employee.salary.toString(),
-            experience: employee.experience.toString(),
-        }).toString();
-        router.push(`/employee/employeeCreation?${query}`);
-    };
-
+    // Handle checkbox change to select/deselect employees
     const handleCheckboxChange = (e: React.ChangeEvent<HTMLInputElement>, employee: Employee) => {
         if (e.target.checked) {
             setSelectedIds((prev: number[]) => [...prev, Number(employee.id)]);
@@ -110,7 +99,8 @@ export default function Table({data, pageIndex, reload, onSelect, sendEmployees}
                             onClick={(e) => {
                                 if ((e.target as HTMLInputElement).type === "checkbox" || (e.target as HTMLElement).closest("td")?.querySelector("input[type='checkbox']"))
                                     return;
-                                updateDetails(employee);
+                                setSelectedEmployee(employee);
+                                router.push(`/employee/employeeCreation`);
                             }}
                         >
                             <td className="border-none">
