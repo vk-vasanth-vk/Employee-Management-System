@@ -13,9 +13,9 @@ type Employee = {
 
   salary: number;
 
-  phoneNo: string;
+  phone: string;
 
-  year_of_experience: number;
+  experience: number;
 
 };
 

@@ -6,13 +6,12 @@ import DeleteData from "../api/DeleteData";
 import { Button } from "@mui/material";
 import FilterData from "../api/FilterData";
 import SearchData from "../api/SearchData";
-import {RetrieveData} from "../api/RetrieveData";
+import axios from "axios";
 
 const EmployeeListPage = () => {
     const navigate = useNavigate();
     const [selectedIds, setSelectedIds] = useState([]);
     const [message, setMessage] = useState("");
-    const [employees, setEmployees] = ([]);
     const [dropdownVisible, setDropdownVisible] = useState(false); // State to control dropdown visibility
     const [deptDropdown, setDeptDropdown] = useState(false);
     const [roleDropdown, setRoleDropdown] = useState(false);
@@ -20,6 +19,7 @@ const EmployeeListPage = () => {
     const [filteredData, setFilteredData] = useState([]);
     const [filteredDept, setFilteredDept] = useState("");
     const [filteredRole, setFilteredRole] = useState("");
+    const [triggerFetch, setTriggerFetch] = useState(false);
 
     const roleList = [
         {dept:"Design", role:"Graphic Designer"},
@@ -44,13 +44,17 @@ const EmployeeListPage = () => {
         }
     }, [message]);
 
+    const triggerFetchFunction = () => {
+        setTriggerFetch(true);
+        setTimeout(() => setTriggerFetch(false), 0);
+    }
+
     const deleteData = async () => {
         if (selectedIds.length === 0) return;
         try {
-            for (const id of selectedIds) {
-                await DeleteData(id);
-            }
-            window.location.reload();
+            await DeleteData(selectedIds);
+            triggerFetchFunction()
+            setMessage("Data deleted successfully!");
         } catch (error) {
             console.error("Error deleting employee:", error);
         }
@@ -79,12 +83,11 @@ const EmployeeListPage = () => {
 
     async function searchEmployee() {
         try {
-            const response = await SearchData(inputValue);
-
-            if(response === null) {
+            if(!inputValue.trim()) {
                 setMessage("Enter the name!")
                 return;
             }
+            const response = await SearchData(inputValue,filteredDept);
             setFilteredData(response);
 
         } catch(e) {
@@ -92,13 +95,39 @@ const EmployeeListPage = () => {
         }
     }
 
+        const [file,setFile] = useState(null);
+
+        const handleFileChange = (e) => {
+            setFile(e.target.files[0]);
+        };
+
+        const handleUpload = async () => {
+            if(!file) {
+                alert("Upload a file!");
+                return;
+            }
+
+            const formData = new FormData();
+            formData.append("file", file);
+
+            try {
+                const response = await axios.put("http://localhost:8080/uploadFile", formData, {
+                    headers: {"Content-Type" : "multipart/form-data"},
+                });
+                alert(response.data.message);
+            } catch(error) {
+                console.error(error);
+            }
+        }
+
+
     return (
         <>
             <div className="bg-gray-100 min-h-screen p-6">
                 {dropdownVisible &&
                     <div className="absolute top-0 right-0 z-10 w-[400px] h-[695px] bg-white border-l border-gray-400">
                         <div className="shadow-md w-full h-[50px] flex items-center">
-                            <img src="/close.png" className="w-8 h-8 ml-4 cursor-pointer" onClick={toggleDropdown}/>
+                            <img src="/close.png" alt="" className="w-8 h-8 ml-4 cursor-pointer" onClick={toggleDropdown}/>
                             <Button
                                 variant="contained"
                                 style={{
@@ -145,7 +174,7 @@ const EmployeeListPage = () => {
                                 className="h-[70px] w-full border flex items-center pl-5 hover:shadow-md hover:bg-gray-200 bg-gray-100 font-medium text-[17px]"
                                 onClick={toggleDeptDropdown}>
                                 Department
-                                <img src="/down-arrow.png" className="w-5 h-5 ml-2 mt-1"/>
+                                <img src="/down-arrow.png" alt="" className="w-5 h-5 ml-2 mt-1"/>
                             </div>
                             <ul className={`h-[195px] w-full border ${deptDropdown ? "block" : "hidden"}`}>
                                 <li className={`h-1/4 w-full border ${(filteredDept === "Design") ? "bg-gray-400" : "white"}`}
@@ -277,24 +306,33 @@ const EmployeeListPage = () => {
                             </svg>
                         </button>
                     </div>
+                    <input type="file" className="ml-[500px] mr-5 w-50"
+                        onChange={handleFileChange}
+                    />
+                    <button
+                        onClick={handleUpload}
+                    >Upload</button>
                 </div>
 
                 <div className="flex items-center text-red-500 mb-6"
                      onClick={() => {
-                         window.location.reload()
+                         triggerFetchFunction()
                      }}
                 >
                     <p className="text-red-500 text-center ml-[700px]">{message}</p>
-                    <div className="ml-[1390px] fixed flex items-center">
-                        <h2> Clear Filter </h2>
-                        <img src="/close-red.png" className="ml-2 w-3 h-3"/>
+                    <div className="ml-[1390px] fixed">
+                        <button className="border-none h-6 w-[100px] bg-gray-100 flex items-center">
+                            <h2 className="text-red-500"> Clear Filter </h2>
+                            <img src="/close-red.png" className="ml-2 w-3 h-3"/>
+                        </button>
                     </div>
                 </div>
-
+                {/**/}
                 {/* Table */}
                 <div className="mt-3">
                     <TableComponent
                         data={filteredData}
+                        fetch={triggerFetch}
                         onSelect={(selectedIds) => setSelectedIds(selectedIds)}
                     />
                 </div>

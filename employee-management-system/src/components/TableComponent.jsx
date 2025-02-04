@@ -3,15 +3,11 @@ import { Checkbox } from "@mui/material";
 import { RetrieveData } from "../api/RetrieveData";
 import {useNavigate} from "react-router-dom";
 
-const TableComponent = ({ data, onSelect }) => {
+const TableComponent = ({ data, fetch, onSelect }) => {
     const [employees, setEmployees] = useState([]);
     const [message, setMessage] = useState("");
     const [selectedIds, setSelectedIds] = useState([]);
     const navigate = useNavigate();
-
-    useEffect(() => {
-        console.log(data)
-    }, [data]);
 
     // Notify parent component of changes in selection
     useEffect(() => {
@@ -22,17 +18,24 @@ const TableComponent = ({ data, onSelect }) => {
         setEmployees(data);
     }, [data]);
 
+    const fetchData = async () => {
+        await RetrieveData(setEmployees);
+    };
+
     // Fetch data when the component mounts
     useEffect(() => {
-        const fetchData = async () => {
-            await RetrieveData(setEmployees);
-        };
         fetchData();
     }, []);
 
+    useEffect(() => {
+        if(fetch) {
+            fetchData();
+        }
+    }, [fetch]);
+
     const updateDetails = (event) => {
         const rowData = { ...event.currentTarget.dataset };
-        navigate("/create-employee", { state: rowData }); // Pass rowData to the next page
+        navigate("/create-employee", { state: rowData }); // Pass rowData to the EmployeeCreation page for update
     };
 
     const handleCheckboxChange = (e, employee) => {
@@ -56,6 +59,7 @@ const TableComponent = ({ data, onSelect }) => {
                     <th scope="col">Email</th>
                     <th scope="col">Phone No</th>
                     <th scope="col">Salary</th>
+                    <th scope="col">Experience</th>
                 </tr>
                 </thead>
                 <tbody>
@@ -72,6 +76,7 @@ const TableComponent = ({ data, onSelect }) => {
                             data-email={employee.email}
                             data-salary={employee.salary}
                             data-phone={employee.phoneNo}
+                            data-experience={employee.year_of_experience}
                             onClick={(e) => {
                                 if (e.target.type === "checkbox" || e.target.closest("td").querySelector("input[type='checkbox']"))
                                     return;
@@ -81,7 +86,6 @@ const TableComponent = ({ data, onSelect }) => {
                             <td className="border-none">
                                 <Checkbox
                                     onChange={(e) => handleCheckboxChange(e, employee)}
-                                    checked={selectedIds.includes(employee.id)}
                                 />
                             </td>
                             <td>{employee.id}</td>
@@ -91,6 +95,7 @@ const TableComponent = ({ data, onSelect }) => {
                             <td>{employee.email}</td>
                             <td>{employee.phoneNo}</td>
                             <td>{employee.salary}</td>
+                            <td>{employee.year_of_experience}</td>
                         </tr>
                     ))
                 ) : (

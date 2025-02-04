@@ -288,7 +288,7 @@ export default function EmployeeList() {
         />
 
         {/* Pagination */}
-        <Pagination totalEmployees={employees.length} setCurrentPage={setPageIndex} />
+          <Pagination totalEmployees={employees.length} setCurrentPage={setPageIndex} />
       </div>
     </>
   );

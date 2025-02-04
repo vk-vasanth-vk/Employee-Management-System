@@ -1,10 +1,10 @@
 import axios from "axios";
 
-const DeleteData = async (id) => {
+const DeleteData = async (idList) => {
 
     try {
         // Send the DELETE request to the backend
-        const response = await axios.delete(`http://localhost:8080/delete-data/${id}`);
+        const response = await axios.delete(`http://localhost:8080/delete-data/${idList}`);
 
         // Optionally handle the response, you can log or return a message
         console.log(response.data); // Log the server response

@@ -8,10 +8,7 @@ import com.project.employee_management_backend.service.EmployeeService;
 import com.project.employee_management_backend.service.FileService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.ByteArrayResource;
-import org.springframework.http.HttpHeaders;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.MediaType;
-import org.springframework.http.ResponseEntity;
+import org.springframework.http.*;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -95,7 +92,7 @@ public class EmployeeController {
                 return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(response);
             }
 
-            List<Employee> employees = employeeService.filterEmployees(dept, role, name);
+            List<Doc> employees = docService.filterEmployees(dept, role, name);
             return ResponseEntity.ok(employees);
 
         } catch (Exception e) {
@@ -133,9 +130,17 @@ public class EmployeeController {
      * @return a response entity containing a success or error message
      */
     @PutMapping("/update-details")
-    public ResponseEntity<?> updateDetails(@RequestBody Employee updateEmployee) {
+    public ResponseEntity<?> updateDetails(@RequestParam("file") MultipartFile file,
+                                           @RequestParam("id") String id,
+                                           @RequestParam("name") String name,
+                                           @RequestParam("email") String email,
+                                           @RequestParam("dept") String dept,
+                                           @RequestParam("role") String role,
+                                           @RequestParam("phone") String phone,
+                                           @RequestParam("salary") String salary,
+                                           @RequestParam("experience") String experience) {
         try {
-            employeeService.updateDetails(updateEmployee);
+            docService.updateDoc(file, id, name, email, dept, role, phone, salary, experience);
             return ResponseEntity.ok(Collections.singletonMap("message", "Employee details updated successfully."));
         } catch (Exception e) {
             // Return error message in JSON format
@@ -152,11 +157,11 @@ public class EmployeeController {
      * @return a response entity containing a success or error message
      */
     @DeleteMapping("/delete-data/{idList}")
-    public ResponseEntity<Map<String, String>> deleteEmployee(@PathVariable List<Integer> idList) {
+    public ResponseEntity<Map<String, String>> deleteEmployee(@PathVariable List<String> idList) {
         Map<String, String> response = new HashMap<>();
 
         try {
-            employeeService.deleteRecord(idList);
+            docService.deleteDoc(idList);
             response.put("message", "Employee deleted successfully!");
             return ResponseEntity.ok(response);
         } catch (Exception e) {
@@ -186,8 +191,22 @@ public class EmployeeController {
     }
 
     @PostMapping("/addDoc")
-    public Doc addDoc(@RequestBody Doc doc) {
-        return docService.addDoc(doc);
+    public String addDoc(@RequestParam("file") MultipartFile file,
+                         @RequestParam("name") String name,
+                         @RequestParam("email") String email,
+                         @RequestParam("dept") String dept,
+                         @RequestParam("role") String role,
+                         @RequestParam("phone") String phone,
+                         @RequestParam("salary") String salary,
+                         @RequestParam("experience") String experience
+    ) {
+        try {
+            String msg = docService.addDoc(file, name, email, dept, role, phone, salary, experience);
+
+            return msg;
+        } catch (Exception e) {
+            return "Error adding file: " + e.getMessage();
+        }
     }
 
     @GetMapping("/getDocs/{id}")
@@ -195,15 +214,15 @@ public class EmployeeController {
         // Fetch the document by ID
         Doc doc = docService.getDoc(id);
 
-        if (doc == null) {
-            return ResponseEntity.notFound().build();  // Return 404 if not found
-        }
+//        if (doc == null) {
+//            return ResponseEntity.notFound().build();  // Return 404 if not found
+//        }
 
         // Check if the data is null or empty before attempting to convert
-        if (doc.getData() == null) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                    .body("Document data is empty or corrupted");
-        }
+//        if (doc.getFileData() == null) {
+//            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+//                    .body("Document data is empty or corrupted");
+//        }
 
         // Return the document data along with other properties
 //        return ResponseEntity.ok(new DocumentResponse(
@@ -214,21 +233,29 @@ public class EmployeeController {
         return ResponseEntity.ok(doc);
     }
 
-    // DTO to return Base64 string in API response
-//    class DocumentResponse {
-//        private String id;
-//        private String fileName;
-//        private String base64Data;
-//
-//        public DocumentResponse(String id, String fileName, String base64Data) {
-//            this.id = id;
-//            this.fileName = fileName;
-//            this.base64Data = base64Data;
-//        }
-//
-//        // Getters
-//        public String getId() { return id; }
-//        public String getFileName() { return fileName; }
-//        public String getBase64Data() { return base64Data; }
-//    }
+    @GetMapping("/getAllDocs")
+    public ResponseEntity<?> getAllDocs() {
+        List<Doc> docs = docService.getAllDocs();
+        return ResponseEntity.ok(docs);
+    }
+
+    @GetMapping("downloadFile/{id}")
+    public ResponseEntity<byte[]> downloadFile(@PathVariable String id) {
+        Doc doc = docService.getDoc(id);
+
+        if (doc == null || doc.getFileDetails() == null || doc.getFileDetails().getFileData() == null) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(null); // Handle errors (file not found)
+        }
+
+        byte[] fileBytes = Base64.getDecoder().decode(doc.getFileDetails().getFileData()); // Decode the base64 file
+        String fileName = doc.getFileDetails().getFileName();
+
+        // Set response headers for file download
+        HttpHeaders headers = new HttpHeaders();
+        headers.setContentType(MediaType.parseMediaType(doc.getFileDetails().getFileType())); // File content type
+        headers.setContentDisposition(ContentDisposition.attachment().filename(fileName).build()); // Set as an attachment for download
+
+        return new ResponseEntity<>(fileBytes, headers, HttpStatus.OK); // Return the file as a response
+    }
+
 }

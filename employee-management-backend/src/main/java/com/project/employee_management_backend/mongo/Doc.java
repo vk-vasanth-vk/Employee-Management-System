@@ -9,17 +9,21 @@ import org.springframework.data.mongodb.core.mapping.Document;
 import org.springframework.stereotype.Service;
 
 @Getter
+@Setter
 @Service
 @NoArgsConstructor
 @Document(collection = "files")
 public class Doc {
     @Id
     private String id;
-    private String fileName;
-    private byte[] data;
 
+    private String name;
+    private String dept;
+    private String email;
+    private String phone;
+    private String role;
+    private String salary;
+    private String experience;
 
-//    public String getDataAsBase64() {
-//        return java.util.Base64.getEncoder().encodeToString(this.data.getData());
-//    }
+    private FileDetails fileDetails;
 }

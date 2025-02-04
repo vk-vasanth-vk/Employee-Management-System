@@ -1,4 +1,4 @@
-const InsertData = async (name, department, role, email, salary, phoneNo, setMessage) => {
+const InsertData = async (name, department, role, email, salary, phoneNo, year_of_experience, setMessage) => {
     try {
         const response = await fetch("http://localhost:8080/insertRecord", {
             method: "POST",
@@ -12,6 +12,7 @@ const InsertData = async (name, department, role, email, salary, phoneNo, setMes
                 email,
                 salary,
                 phoneNo,
+                year_of_experience
             }),
         });
 
@@ -19,8 +20,7 @@ const InsertData = async (name, department, role, email, salary, phoneNo, setMes
             const errorDetails = await response.json(); // Fetch detailed error message from the response
             console.error("Server responded with an error:", errorDetails.message);
             setMessage(errorDetails.message);
-            return false;
-            throw new Error(errorDetails.message);
+            return;
         }
 
         const data = await response.json();

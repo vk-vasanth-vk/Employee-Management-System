@@ -65,8 +65,8 @@ const EmployeeCreation = () => {
           role: selectedEmployee.role || "",
           email: selectedEmployee.email || "",
           salary: Number(selectedEmployee.salary) || 0,
-          phone: selectedEmployee.phoneNo || "",
-          experience: Number(selectedEmployee.year_of_experience) || 0,
+          phone: selectedEmployee.phone || "",
+          experience: Number(selectedEmployee.experience) || 0,
         });
         setUpdate(true);
       }
@@ -82,11 +82,11 @@ const EmployeeCreation = () => {
   }, [message]);
 
   // Trigger file upload when the file state changes
-  useEffect(() => {
-    if (file) {
-      uploadFile();
-    }
-  }, [file]);
+  // useEffect(() => {
+  //   if (file) {
+  //     uploadFile();
+  //   }
+  // }, [file]);
 
   // Handle form submission (either create or update employee)
   const handleSubmit = async (e: React.FormEvent) => {
@@ -98,16 +98,22 @@ const EmployeeCreation = () => {
 
     try {
       if (update) {
-        const response = await UpdateData(
-          Number(employee.id),
-          employee.name,
-          employee.department,
-          employee.role,
-          employee.email,
-          employee.salary.toString(),
-          employee.phone,
-          employee.experience.toString()
-        );
+        const fileData = new FormData();
+
+        fileData.append("id", employee.id);
+        fileData.append("name", employee.name);
+        fileData.append("email", employee.email);
+        fileData.append("dept", employee.department);
+        fileData.append("role", employee.role);
+        fileData.append("phone", employee.phone);
+        fileData.append("salary", employee.salary.toString());
+        fileData.append("experience", employee.experience.toString());
+
+        if (file) {
+          fileData.append("file", file);
+        }
+
+        const response = UpdateData(fileData);
 
         if (response) {
           setMessage(response.message);
@@ -116,15 +122,21 @@ const EmployeeCreation = () => {
           }, 1500); 
         }
       } else {
-        const response = await createEmployee(
-          employee.name,
-          employee.department,
-          employee.role,
-          employee.email,
-          employee.salary.toString(),
-          employee.phone,
-          employee.experience.toString()
-        );
+        const fileData = new FormData();
+
+        if (file) {
+          fileData.append("file", file);
+        }
+
+        fileData.append("name", employee.name);
+        fileData.append("email", employee.email);
+        fileData.append("dept", employee.department);
+        fileData.append("role", employee.role);
+        fileData.append("phone", employee.phone);
+        fileData.append("salary", employee.salary.toString());
+        fileData.append("experience", employee.experience.toString());
+
+        const response = UploadFile(fileData);
         
         if (response) {
           setMessage(response.message);
@@ -138,20 +150,6 @@ const EmployeeCreation = () => {
     }
   };
 
-  // Handle file upload to the server
-  const uploadFile = async () => {
-    if (file) {
-      const formData = new FormData();
-      formData.append("file", file);
-      try {
-        const response = await UploadFile(formData);
-      } catch (error) {
-        console.error("Failed to upload file", error);
-      }
-    } else {
-      console.error("No file selected");
-    }
-  };
 
   // Reset the form to empty state
   const resetForm = () => {
@@ -229,7 +227,7 @@ const EmployeeCreation = () => {
     <h1 className="text-2xl font-bold ml-[350px]">Employee Details</h1>
 
     {/* Form */}
-    <form onSubmit={handleSubmit} className="flex flex-col">
+    <form className="flex flex-col">
       <div className="flex flex-row">
         {/* Labels Section */}
         <div className="flex flex-col space-y-[34px] ml-[350px] mt-[30px] min-w-[200px] h-[350px]">
@@ -340,7 +338,8 @@ const EmployeeCreation = () => {
       {/* Action Buttons */}
       <div className="flex flex-row items-center justify-center space-x-4 mt-8 mb-4">
         <Button
-          type="submit"
+          type="button"
+          onClick={handleSubmit}
           className="bg-blue-500 text-white px-4 py-2 rounded-md"
           variant="contained"
         >

@@ -18,7 +18,6 @@ const FilterData = async (dept, role) => {
     try {
         // Fetch data from the server
         const response = await fetch(url);
-        // console.log(response);
 
         // Handle non-OK responses
         if (!response.ok) {

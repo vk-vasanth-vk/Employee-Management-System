@@ -1,17 +1,18 @@
 'use client';
 
 import React, { useEffect, useState } from "react";
-import { RetrieveData } from "../utils/api";
-import { Checkbox } from "@mui/material";
+import { RetrieveData, DownloadFile } from "../utils/api";
+import { Button, Checkbox } from "@mui/material";
 import { useRouter } from "next/navigation";
 import Employee from "@/app/types/Employee";
 import TableProps from "@/app/types/TableProps";
+import Image from "next/image";
 import { useEmployee } from "@/app/context/EmployeeContext";
 
 export default function Table({data, pageIndex, reload, onSelect, sendEmployees}: TableProps) {
 
     const [employees, setEmployees] = useState<Employee[]>([]);
-    const [selectedIds, setSelectedIds] = useState<number[]>([]);
+    const [selectedIds, setSelectedIds] = useState<string[]>([]);
     const [currentPage, setCurrentPage] = useState(pageIndex);
     const { setSelectedEmployee } = useEmployee();
     const [message, setMessage] = useState("");
@@ -31,7 +32,7 @@ export default function Table({data, pageIndex, reload, onSelect, sendEmployees}
     }, [data]);
 
     useEffect(() => {
-        setCurrentPage(pageIndex);
+        setCurrentPage(pageIndex);  
     }, [pageIndex])
 
     const fetchData = async () => {
@@ -58,11 +59,16 @@ export default function Table({data, pageIndex, reload, onSelect, sendEmployees}
     // Handle checkbox change to select/deselect employees
     const handleCheckboxChange = (e: React.ChangeEvent<HTMLInputElement>, employee: Employee) => {
         if (e.target.checked) {
-            setSelectedIds((prev: number[]) => [...prev, Number(employee.id)]);
+            setSelectedIds((prev: string[]) => [...prev, employee.id]);
         } else {
-            setSelectedIds((prev) => prev.filter((id) => id !== Number(employee.id)));
+            setSelectedIds((prev) => prev.filter((id) => id !== employee.id));
         }
     };
+
+    const downloadFile = async(id : string) => {
+        const response = await DownloadFile(id);
+        console.log(response);
+    }
 
     return (
         <div className="text-black w-full h-[530px]">
@@ -78,6 +84,7 @@ export default function Table({data, pageIndex, reload, onSelect, sendEmployees}
                     <th scope="col">Phone No</th>
                     <th scope="col">Salary</th>
                     <th scope="col">Experience</th>
+                    <th scope="col">ID Proof</th>
                 </tr>
                 </thead>
                 <tbody>
@@ -90,15 +97,23 @@ export default function Table({data, pageIndex, reload, onSelect, sendEmployees}
                             data-key={index}
                             data-id={employee.id}
                             data-name={employee.name}
-                            data-department={employee.department}
+                            data-department={employee.dept}
                             data-role={employee.role}
                             data-email={employee.email}
                             data-salary={employee.salary}
-                            data-phone={employee.phoneNo}
-                            data-experience={employee.year_of_experience}
+                            data-phone={employee.phone}
+                            data-experience={employee.experience}
                             onClick={(e) => {
-                                if ((e.target as HTMLInputElement).type === "checkbox" || (e.target as HTMLElement).closest("td")?.querySelector("input[type='checkbox']"))
+                                const target = e.target as HTMLElement;
+                                if (target.tagName === "INPUT" && ((target as HTMLInputElement).type === "checkbox" || (target as HTMLInputElement).type === "button")) {
                                     return;
+                                }
+
+                                // Check if the click is inside a td containing a checkbox or button
+                                const closestInput = target.closest("td")?.querySelector("input[type='checkbox'], input[type='button']");
+                                if (closestInput) {
+                                    return;
+                                }
                                 setSelectedEmployee(employee);
                                 router.push(`/employee/employeeCreation`);
                             }}
@@ -110,12 +125,21 @@ export default function Table({data, pageIndex, reload, onSelect, sendEmployees}
                             </td>
                             <td>{employee.id}</td>
                             <td>{employee.name}</td>
-                            <td>{employee.department}</td>
+                            <td>{employee.dept}</td>
                             <td>{employee.role}</td>
                             <td>{employee.email}</td>
-                            <td>{employee.phoneNo}</td>
+                            <td>{employee.phone}</td>
                             <td>{employee.salary}</td>
-                            <td>{employee.year_of_experience}</td>
+                            <td>{employee.experience}</td>
+                            <td>
+                                <button className="border-none bg-white w-10 flex items-center justify-center"
+                                onClick={(e) => {
+                                    e.stopPropagation();
+                                    downloadFile(employee.id);
+                                  }}>
+                                    <Image src="/file.png" width={20} height={10} alt="" />
+                                </button>
+                            </td>
                         </tr>
                     ))
                 ) : (
