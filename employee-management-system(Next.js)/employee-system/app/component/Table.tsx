@@ -38,6 +38,7 @@ export default function Table({data, pageIndex, reload, onSelect, sendEmployees}
     const fetchData = async () => {
         const response = await RetrieveData();
         if(response) {
+            console.table(response);
             setEmployees(response);
             sendEmployees(response);
         } else {
@@ -132,7 +133,7 @@ export default function Table({data, pageIndex, reload, onSelect, sendEmployees}
                             <td>{employee.salary}</td>
                             <td>{employee.experience}</td>
                             <td>
-                                <button className="border-none bg-white w-10 flex items-center justify-center"
+                                <button className="border-none bg-white h-8 w-6 flex items-center justify-center"
                                 onClick={(e) => {
                                     e.stopPropagation();
                                     downloadFile(employee.id);

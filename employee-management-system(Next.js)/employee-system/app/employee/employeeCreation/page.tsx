@@ -162,7 +162,7 @@ const EmployeeCreation = () => {
       email: "",
       salary: 0,
       phone: "",
-      experience: 0,
+      experience: 0
     });
   };
 
@@ -178,7 +178,7 @@ const EmployeeCreation = () => {
   const validateFields = () => {
     const { name, email, role, phone, department, salary, experience } = employee;
 
-    if (!name || !email || !role || !phone || !department || !salary || !experience) {
+    if (!name || !email || !role || !phone || !department || !salary || !experience || !file) {
       setMessage("All fields are required");
       return false;
     }
@@ -227,7 +227,7 @@ const EmployeeCreation = () => {
     <h1 className="text-2xl font-bold ml-[350px]">Employee Details</h1>
 
     {/* Form */}
-    <form className="flex flex-col">
+    <form className="flex flex-col" onSubmit={handleSubmit}>
       <div className="flex flex-row">
         {/* Labels Section */}
         <div className="flex flex-col space-y-[34px] ml-[350px] mt-[30px] min-w-[200px] h-[350px]">
@@ -338,8 +338,7 @@ const EmployeeCreation = () => {
       {/* Action Buttons */}
       <div className="flex flex-row items-center justify-center space-x-4 mt-8 mb-4">
         <Button
-          type="button"
-          onClick={handleSubmit}
+          type="submit"
           className="bg-blue-500 text-white px-4 py-2 rounded-md"
           variant="contained"
         >

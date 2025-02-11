@@ -88,9 +88,6 @@ export async function UpdateData(file: FormData) {
 
 // Upload file
 export async function UploadFile(file: FormData) {
-    // const data = new FormData();
-    // data.append("file", file);
-    // data.append("data", JSON.stringify(formData));
 
     try { 
         const response = await axios.post(`${BASE_URL}/addDoc`, file, {
