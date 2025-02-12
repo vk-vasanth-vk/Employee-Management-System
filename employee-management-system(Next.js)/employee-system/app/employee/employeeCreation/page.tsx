@@ -30,6 +30,7 @@ const EmployeeCreation = () => {
     salary: 0,
     phone: "",
     experience: 0,
+    gender: ""
   });
 
   // State for error/success messages
@@ -67,6 +68,7 @@ const EmployeeCreation = () => {
           salary: Number(selectedEmployee.salary) || 0,
           phone: selectedEmployee.phone || "",
           experience: Number(selectedEmployee.experience) || 0,
+          gender: selectedEmployee.gender
         });
         setUpdate(true);
       }
@@ -80,13 +82,6 @@ const EmployeeCreation = () => {
       return () => clearTimeout(timer);
     }
   }, [message]);
-
-  // Trigger file upload when the file state changes
-  // useEffect(() => {
-  //   if (file) {
-  //     uploadFile();
-  //   }
-  // }, [file]);
 
   // Handle form submission (either create or update employee)
   const handleSubmit = async (e: React.FormEvent) => {
@@ -106,6 +101,7 @@ const EmployeeCreation = () => {
         fileData.append("dept", employee.department);
         fileData.append("role", employee.role);
         fileData.append("phone", employee.phone);
+        fileData.append("gender", employee.gender)
         fileData.append("salary", employee.salary.toString());
         fileData.append("experience", employee.experience.toString());
 
@@ -133,6 +129,7 @@ const EmployeeCreation = () => {
         fileData.append("dept", employee.department);
         fileData.append("role", employee.role);
         fileData.append("phone", employee.phone);
+        fileData.append("gender", employee.gender);
         fileData.append("salary", employee.salary.toString());
         fileData.append("experience", employee.experience.toString());
 
@@ -162,7 +159,8 @@ const EmployeeCreation = () => {
       email: "",
       salary: 0,
       phone: "",
-      experience: 0
+      experience: 0,
+      gender: ""
     });
   };
 
@@ -176,9 +174,9 @@ const EmployeeCreation = () => {
 
   // Validate the form fields before submitting
   const validateFields = () => {
-    const { name, email, role, phone, department, salary, experience } = employee;
+    const { name, email, role, phone, department, salary, experience, gender } = employee;
 
-    if (!name || !email || !role || !phone || !department || !salary || !experience || !file) {
+    if (!name || !email || !role || !phone || !department || !salary || !experience || !file || !gender) {
       setMessage("All fields are required");
       return false;
     }
@@ -238,6 +236,7 @@ const EmployeeCreation = () => {
           <label>Phone No</label>
           <label>Salary</label>
           <label>Experience</label>
+          <label>Gender</label>
           <label>ID Proof</label>
         </div>
 
@@ -320,6 +319,18 @@ const EmployeeCreation = () => {
           onChange={handleChange}
           className="border border-gray-400 p-2 ml-4 w-[400px]"
         />
+
+          <select
+            className="border border-gray-400 p-2 ml-4 w-[400px]"
+            name="gender"
+            value={employee.gender}
+            onChange={handleChange}
+          >
+            <option value="">Select gender</option>
+            <option>Male</option>
+            <option>Female</option>
+            <option>Other</option>
+          </select>
 
           <input
             type="file"

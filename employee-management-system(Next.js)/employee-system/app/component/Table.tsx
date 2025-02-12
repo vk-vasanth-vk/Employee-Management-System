@@ -9,11 +9,13 @@ import TableProps from "@/app/types/TableProps";
 import Image from "next/image";
 import { useEmployee } from "@/app/context/EmployeeContext";
 
-export default function Table({data, pageIndex, reload, onSelect, sendEmployees}: TableProps) {
+export default function Table({data, pageIndex, reload, onSelect, sendEmployees, fileID, onFilePreview}: TableProps) {
 
     const [employees, setEmployees] = useState<Employee[]>([]);
     const [selectedIds, setSelectedIds] = useState<string[]>([]);
     const [currentPage, setCurrentPage] = useState(pageIndex);
+    // const [filePreviewID, setFilePreviewID] = useState<string | undefined>(fileID);
+    // const [filePreviewStatus, setFilePreviewStatus] = useState(false);
     const { setSelectedEmployee } = useEmployee();
     const [message, setMessage] = useState("");
     const employeesPerPage = 10;
@@ -85,6 +87,7 @@ export default function Table({data, pageIndex, reload, onSelect, sendEmployees}
                     <th scope="col">Phone No</th>
                     <th scope="col">Salary</th>
                     <th scope="col">Experience</th>
+                    <th scope="col">Gender</th>
                     <th scope="col">ID Proof</th>
                 </tr>
                 </thead>
@@ -104,6 +107,7 @@ export default function Table({data, pageIndex, reload, onSelect, sendEmployees}
                             data-salary={employee.salary}
                             data-phone={employee.phone}
                             data-experience={employee.experience}
+                            data-gender={employee.gender}
                             onClick={(e) => {
                                 const target = e.target as HTMLElement;
                                 if (target.tagName === "INPUT" && ((target as HTMLInputElement).type === "checkbox" || (target as HTMLInputElement).type === "button")) {
@@ -130,13 +134,14 @@ export default function Table({data, pageIndex, reload, onSelect, sendEmployees}
                             <td>{employee.role}</td>
                             <td>{employee.email}</td>
                             <td>{employee.phone}</td>
-                            <td>{employee.salary}</td>
+                            <td>₹{employee.salary}</td>
                             <td>{employee.experience}</td>
+                            <td>{employee.gender}</td>
                             <td>
                                 <button className="border-none bg-white h-8 w-6 flex items-center justify-center"
                                 onClick={(e) => {
                                     e.stopPropagation();
-                                    downloadFile(employee.id);
+                                    onFilePreview(employee.id);
                                   }}>
                                     <Image src="/file.png" width={20} height={10} alt="" />
                                 </button>

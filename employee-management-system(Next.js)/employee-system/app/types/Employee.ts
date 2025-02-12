@@ -17,6 +17,8 @@ type Employee = {
 
   experience: number;
 
+  gender: string;
+
 };
 
 export default Employee;

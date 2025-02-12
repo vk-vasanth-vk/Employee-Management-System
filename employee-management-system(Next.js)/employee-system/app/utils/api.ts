@@ -104,6 +104,7 @@ export async function UploadFile(file: FormData) {
 
 export async function DownloadFile(id: string) {
     try {
+        console.log();
         const response = await axios.get(`${BASE_URL}/downloadFile/${id}`, {
             responseType: 'blob', // Handle binary data
             headers: {
@@ -122,3 +123,18 @@ export async function DownloadFile(id: string) {
         console.error("Error fetching file:", error);
     }
 };
+
+export async function PreviewFile(id: string) {
+    try {
+        const response = await axios.get(`${BASE_URL}/viewFile/${id}`)
+        
+        if (response.status === 200 && response.data) {
+            // const fileUrl = `data:image/png;base64,${response.data}`;
+            return response.data;
+        } else {
+            console.error("Failed to retrieve file");
+        }
+    } catch (error) {
+        console.log(error);
+    }
+}

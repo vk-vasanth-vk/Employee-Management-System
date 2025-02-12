@@ -1,6 +1,6 @@
 'use client';
 import { useState, useEffect } from 'react';
-import { DeleteData, FilterData } from '@/app/utils/api';
+import { DeleteData, FilterData, PreviewFile, DownloadFile } from '@/app/utils/api';
 import Image from 'next/image';
 import '../styles/style.css';
 import Link from 'next/link';
@@ -21,6 +21,10 @@ export default function EmployeeList() {
   const [filteredDept, setFilteredDept] = useState('');
   const [filteredRole, setFilteredRole] = useState('');
   const [triggerFetch, setTriggerFetch] = useState(false);
+  const [filePreview, setFilePreview] = useState(false);
+  const [fileUrl, setFileUrl] = useState<string>('/placeholder');
+  const [fileId, setFileId] = useState<string>('');
+  const [loading, setLoading] = useState(true);
 
   const [employees, setEmployees] = useState<Employee[]>([]);
   const [pageIndex, setPageIndex] = useState(1);
@@ -61,6 +65,10 @@ export default function EmployeeList() {
     }
   };
 
+  const downloadFile = async () => {
+    const response = await DownloadFile(fileId);
+  }
+
   const toggleDropdown = () => {
     setDropdownVisible((prevState) => !prevState);
   };
@@ -91,7 +99,41 @@ export default function EmployeeList() {
 
   return (
     <>
-      <div className="bg-gray-100 min-h-screen p-6">
+      <div className="bg-gray-100 min-h-screen p-6 relative">
+        {filePreview && (
+          <div className='z-10 bg-gray-50 border border-gray-400 rounded-xl top-28 left-[400px] w-[700px] h-[500px] absolute'>
+            <div className='border-b border-gray-400 flex justify-end'>
+              <Button className='w-10'
+                type='button'
+                onClick={() => setFilePreview(false)}
+              >
+                <Image src="/close.png" alt="" width={30} height={30} />
+              </Button>
+            </div>
+            <div className='h-[380px] flex items-center justify-center'> 
+              {loading? (
+                <div> Loading </div>
+              ):(
+                <object data={fileUrl} height={370} width={250}></object>
+              )}
+            </div>
+            <div className='h-[70px] flex justify-center items-center'>
+              <Button
+                variant="contained"
+                style={{
+                  backgroundColor: 'blueviolet',
+                  color: 'white',
+                  width: '80px',
+                  height: '40px',
+                  textTransform: 'none',
+                }}
+                onClick={downloadFile}
+              >
+                Download
+              </Button>
+            </div>
+          </div>
+        )}
         {dropdownVisible && (
           <div className="absolute top-0 right-0 z-10 w-[400px] h-[695px] bg-white border-l border-gray-400">
             <div className="shadow-md w-full h-[50px] flex items-center">
@@ -194,7 +236,20 @@ export default function EmployeeList() {
         )}
         {/* Header */}
         <div className="w-full flex items-center h-16 border-b border-gray-300 mb-2">
-          <h2 className="text-2xl font-bold text-center flex-1 ml-[300px]">Employee List</h2>
+          <div>
+          <Link href="/employee/hrDashboard">
+              <Button
+                variant="contained"
+                style={{
+                  textTransform: 'none',
+                  marginRight: '10px',
+                }}
+              >
+                Analytics
+              </Button>
+            </Link>
+          </div>
+          <h2 className="text-2xl font-bold text-center flex-1 ml-[160px]">Employee List</h2>
           <div className="flex gap-4">
             <Link href="/employee/employeeCreation">
               <Button
@@ -263,11 +318,12 @@ export default function EmployeeList() {
           </div>
         </div>
 
-        <div className="flex items-center text-red-500 mb-2 relative flex justify-center w-100 h-10"
+        <div className="flex items-center text-red-500 mb-2 relative justify-center w-100 h-10"
             onClick={() => {
                 triggerFetchFunction()
             }}
         >
+            <div className='absolute left-0'>(Results: {employees.length})</div>
             <p>{message}</p>
             <div className="absolute right-0">
                 <button className="border-none h-6 w-[100px] bg-gray-100 flex items-center">
@@ -283,8 +339,23 @@ export default function EmployeeList() {
             data={filteredData}
             reload={triggerFetch}
             pageIndex={pageIndex}
-            onSelect={(selectedIds: number[]) => setSelectedIds(selectedIds)}
             sendEmployees={(data) => {setEmployees(data)}}
+
+            onFilePreview={async (fileID:string) => {
+              setFileId(fileID)
+              setFilePreview(true);
+              const res = await PreviewFile(fileID);
+
+              try {
+                setLoading(true);
+                setFileUrl(res as string);
+              } catch(error) {
+                console.error(error);
+              } finally {
+                setLoading(false);
+              }
+            }}
+            onSelect={(selectedIds: number[]) => setSelectedIds(selectedIds)}
         />
 
         {/* Pagination */}
