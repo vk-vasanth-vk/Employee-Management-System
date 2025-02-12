@@ -11,6 +11,7 @@ import org.springframework.stereotype.Service;
 @Getter
 @Setter
 @Service
+@AllArgsConstructor
 @NoArgsConstructor
 @Document(collection = "files")
 public class Doc {
@@ -22,6 +23,7 @@ public class Doc {
     private String email;
     private String phone;
     private String role;
+    private String gender;
     private String salary;
     private String experience;
 
